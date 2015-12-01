@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "rm -r test/dist && ./node_modules/.bin/gulp --gulpfile test/gulpfile.babel.js",
-    "lint": "./node_modules/.bin/standard"
+    "test": "rm -r test/dist && gulp --gulpfile test/gulpfile.babel.js",
+    "lint": "standard"
   },
   "author": "Gabin Aureche <hello@gabinaureche.com> (http://gabinaureche.com/)",
   "license": "MIT",
