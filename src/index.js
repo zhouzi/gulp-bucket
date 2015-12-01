@@ -46,7 +46,7 @@ bucket.options = function () {
 }
 
 bucket.setDefaultTask = function (...tasks) {
-  tasks = _.flatten(tasks)
+  tasks = _.flatten(tasks, true)
   gulp.task('default', tasks)
 
   return tasks
