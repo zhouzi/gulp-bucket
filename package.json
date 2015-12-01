@@ -1,7 +1,7 @@
 {
   "name": "gulp-bucket",
   "version": "0.0.0",
-  "description": "",
+  "description": "Reusable ES6 gulp tasks",
   "main": "index.js",
   "scripts": {
     "test": "rm -r test/dist && gulp --gulpfile test/gulpfile.babel.js",
