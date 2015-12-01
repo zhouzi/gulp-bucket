@@ -3,7 +3,7 @@ import uglify from 'gulp-uglify'
 import babel from 'gulp-babel'
 import concat from 'gulp-concat'
 import copyTask from './copyTask'
-import bucket from '../../index'
+import bucket from '../../src/index'
 
 export default function (config, options) {
   console.log(options)

@@ -1,11 +1,16 @@
 {
   "name": "gulp-bucket",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Reusable ES6 gulp tasks",
   "main": "index.js",
+  "babel": {
+    "presets": ["es2015"]
+  },
   "scripts": {
-    "test": "rm -r test/dist && gulp --gulpfile test/gulpfile.babel.js",
-    "lint": "standard"
+    "test": "gulp --gulpfile test/gulpfile.babel.js",
+    "lint": "standard",
+    "build": "babel src --out-dir dist",
+    "prepublish": "npm run build"
   },
   "author": "Gabin Aureche <hello@gabinaureche.com> (http://gabinaureche.com/)",
   "license": "MIT",
@@ -18,6 +23,7 @@
   },
   "homepage": "https://github.com/Zhouzi/gulp-bucket",
   "devDependencies": {
+    "babel-cli": "6.2.0",
     "babel-core": "6.2.1",
     "babel-preset-es2015": "6.1.18",
     "gulp": "3.9.0",

@@ -1,4 +1,4 @@
-import bucket from '../index'
+import bucket from '../src/index'
 import uglifyTask from './tasks/uglifyTask'
 
 bucket.options({ env: 'prod' })
