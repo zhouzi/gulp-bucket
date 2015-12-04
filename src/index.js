@@ -39,6 +39,7 @@ function setDefaultTask (...deps) {
   gulp.task('default', _.flatten(deps, true))
 }
 
+bucket.addTask = addTask
 bucket.options = setOptions
 bucket.setDefaultTask = setDefaultTask
 bucket('help', help)
