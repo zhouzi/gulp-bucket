@@ -1,6 +1,6 @@
 {
   "name": "gulp-bucket",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Highly reusable gulp task definition.",
   "main": "dist/index.js",
   "babel": {
