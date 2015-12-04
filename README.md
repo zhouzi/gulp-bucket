@@ -9,12 +9,13 @@ Highly reusable gulp task definition.
 
 ## Introduction
 
-Let's say you have a task that does some stuff with JavaScript files and output a `bundle-1.js` file.
-Now, you want to go through the same pipeline but with different inputs and create `bundle-2.js`.
-You'll have to whether write twice the same task or go through some kind of `.forEach`, iterating on a list of configurations.
+Let's consider a common workflow: you have a task that does some stuff to JavaScript files and outputs `bundle-1.js`.
+But then, you want to use the same pipeline to output `bundle-2.js`.
+To do so, you'll have to whether duplicate the code or go through some kind of `.forEach()` to iterate on a list of configurations.
 
-This is actually what gulp-bucket is about: defining factory functions that receive a configuration and an option object to create tasks.
-It also helps you elegantly managing tasks dependencies by declaring them "on-the-fly" where it makes sense.
+This is what gulp-bucket wants to solve.
+Instead of writing tasks, it allows you to define factory functions that create tasks from a configuration and option object.
+It also helps you to manage tasks dependencies "on-the-fly" by following some common "DI" patterns.
 
 ## Install
 
