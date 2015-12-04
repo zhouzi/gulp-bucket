@@ -1,7 +1,7 @@
 {
   "name": "gulp-bucket",
   "version": "0.0.2",
-  "description": "Reusable ES6 gulp tasks",
+  "description": "Highly reusable gulp task definition.",
   "main": "dist/index.js",
   "babel": {
     "presets": ["es2015"]
