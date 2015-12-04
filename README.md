@@ -123,7 +123,7 @@ bucket.addTask('scripts', { alias: 'app', src: 'src/app/*.js', dest: 'dist' })
 Getter/setter of **options** (default value is `{}`).
 This object is the second argument passed to the task factories.
 
-For example, you could use it to provide options passed from the command line (*argv*).
+*This is something you could use it to provide options passed from the command line (*argv*).*
 
 ```javascript
 import bucket from 'gulp-bucket'
