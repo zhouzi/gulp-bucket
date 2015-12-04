@@ -6,19 +6,8 @@ import copyTask from './copyTask'
 import bucket from '../../src/index'
 
 export default function (config, options) {
-  console.log(options)
-
-  //let serie = []
-  //
-  //if (options.env === 'prod') serie.push(copyTask(config))
-  //
-  //serie.push(function () {})
-  //return serie
-
   return [
-    //bucket('copy', copyTask, config),
-    //copyTask(config),
-    options.env === 'prod' && copyTask(config),
+    options.env === 'prod' && bucket('copy', copyTask, config),
     function () {
       return gulp
         .src(config.src)

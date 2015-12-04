@@ -1,92 +1,46 @@
-import 'colors'
 import _ from 'lodash'
 import gulp from 'gulp'
-import createRootTask from './lib/createRootTask'
-import runSerie from './lib/runSerie'
+import utils from './lib/utils'
+import help from './tasks/help'
 
-let definitions = {}
+let factories = {}
 let options = {}
 
-function bucket (taskName, taskFactory, configs, parallel = true) {
-  definitions[taskName] = taskFactory
-  createRootTask(taskName)
+function bucket (taskName, taskFactory, configs) {
+  factories[taskName] = taskFactory
 
-  if (configs == null) return null
+  if (configs == null) configs = [{}]
+  if (!_.isArray(configs)) configs = [configs]
 
-  return add(taskName, configs, parallel)
-}
-
-function add (taskName, config, parallel = true) {
-  if (_.isArray(config)) {
-    return _.map(config, (c) => add(taskName, c, parallel))
-  }
-
-  if (config.alias == null) throw new Error('The config object must have an alias to be used as a suffix')
-
-  let taskAlias = getFullTaskName(taskName, config.alias)
-  let taskFactory = definitions[taskName]
-  let serie = taskFactory(config, options)
-  let namedTasks = []
-
-  if (parallel === true) namedTasks = _.remove(serie, _.isString)
-
-  gulp.task(taskAlias, namedTasks, callback => runSerie(serie, callback, parallel))
-  return taskAlias
-}
-
-function getFullTaskName (...partials) {
-  return partials.join(':')
-}
-
-bucket.add = add
-
-bucket.options = function () {
-  if (arguments.length) options = arguments[0]
-  return options
-}
-
-bucket.setDefaultTask = function (...tasks) {
-  tasks = _.flatten(tasks, true)
-  gulp.task('default', tasks)
+  let tasks = _.map(configs, (config) => addTask(taskName, config))
+  if (!utils.hasTask(gulp, taskName)) utils.createRootTask(gulp, taskName)
 
   return tasks
 }
 
-gulp.task('help', function (callback) {
-  let tasks = _.keys(gulp.tasks)
-  let groups =
-    _
-      .chain(tasks)
-      .reduce(function (groups, taskName) {
-        let prefix = taskName.split(':').shift()
+function addTask (taskName, config) {
+  let factory = factories[taskName]
+  let sequence = _.flatten(factory(config, options), true)
+  let task = sequence.pop()
+  let deps = _.filter(sequence, _.isString)
 
-        if (groups[prefix] == null) groups[prefix] = []
-        groups[prefix].push(taskName)
+  if (config.alias != null) taskName += ':' + config.alias
 
-        return groups
-      }, {})
-      .reduce(function (groups, value) {
-        groups.push(value)
-        return groups
-      }, [])
-      .value()
+  gulp.task(taskName, deps, task)
+  return taskName
+}
 
-  _.forEach(groups, group => {
-    _.forEach(group, function (item) {
-      let partials = item.split(':')
-      let prefix = partials.shift().bold.cyan
-      let suffix =
-        partials.length
-          ? ':' + partials.join(':').magenta
-          : ''
+function setOptions () {
+  if (arguments.length) options = arguments[0]
+  return options
+}
 
-      console.log(prefix + suffix)
-    })
+function setDefaultTask (...deps) {
+  gulp.task('default', _.flatten(deps, true))
+}
 
-    console.log('---'.gray)
-  })
-
-  callback()
-});
+bucket.options = setOptions
+bucket.setDefaultTask = setDefaultTask
+bucket('help', help)
 
 export default bucket
