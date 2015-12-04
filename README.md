@@ -6,6 +6,7 @@ Highly reusable gulp task definition.
 * [Install](https://github.com/Zhouzi/gulp-bucket#install)
 * [Example](https://github.com/Zhouzi/gulp-bucket#example)
 * [Documentation](https://github.com/Zhouzi/gulp-bucket#documentation)
+* [Change Log](https://github.com/Zhouzi/gulp-bucket#change-log)
 
 ## Introduction
 
@@ -143,3 +144,9 @@ bucket.setDefaultTask([
   ['scripts', 'scripts:vendors', 'scripts:app']
 ])
 ```
+
+## Change Log
+
+### 0.0.3 - 2015-12-05
+
+*First tracked release...*
