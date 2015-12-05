@@ -6,28 +6,27 @@ import help from './tasks/help'
 let factories = {}
 let options = {}
 
-function bucket (taskName, taskFactory, configs) {
+function bucket (taskName, taskFactory, configs = [{}]) {
   factories[taskName] = taskFactory
+  utils.createRootTask(gulp, taskName)
 
-  if (configs == null) configs = [{}]
-  if (!_.isArray(configs)) configs = [configs]
-
-  let tasks = _.map(configs, (config) => addTask(taskName, config))
-  if (!utils.hasTask(gulp, taskName)) utils.createRootTask(gulp, taskName)
-
-  return tasks
+  return addTask(taskName, configs)
 }
 
-function addTask (taskName, config) {
-  let factory = factories[taskName]
-  let sequence = _.flatten(factory(config, options), true)
-  let task = sequence.pop()
-  let deps = _.filter(sequence, _.isString)
+function addTask (taskName, configs) {
+  if (!_.isArray(configs)) configs = [configs]
 
-  if (config.alias != null) taskName += ':' + config.alias
+  return _.map(configs, function (config) {
+    let factory = factories[taskName]
+    let sequence = _.flatten(factory(config, options), true)
+    let task = sequence.pop()
+    let deps = _.filter(sequence, _.isString)
 
-  gulp.task(taskName, deps, task)
-  return taskName
+    if (config.alias != null) taskName += ':' + config.alias
+
+    gulp.task(taskName, deps, task)
+    return taskName
+  })
 }
 
 function setOptions () {
@@ -39,7 +38,7 @@ function setDefaultTask (...deps) {
   gulp.task('default', _.flatten(deps, true))
 }
 
-bucket.addTask = addTask
+bucket.addTask = bucket.addTasks = addTask
 bucket.options = setOptions
 bucket.setDefaultTask = setDefaultTask
 bucket('help', help)

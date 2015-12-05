@@ -90,7 +90,7 @@ Note: there are working examples in `test/` and in the `basic-example` branch.
 
 ### bucket(taskName, taskFactory, configs)
 
-Register a factory for `taskName` and calls `bucket.addTask()` for each `config` of `configs`.
+Register a factory for `taskName` and calls `bucket.addTask()` by passing `configs` to it.
 Also creates a task named after `taskName` that runs every tasks prefixed by `taskName`.
 
 ```javascript
@@ -103,9 +103,9 @@ bucket('scripts', scripts, [
 ])
 ```
 
-### bucket.addTask(taskName, config)
+### bucket.addTask(taskName, configs)
 
-Calls the factory registered under the name of `taskName` to create a task.
+Calls the factory registered under the name of `taskName` to create a task for each config of `configs`.
 The factory receives two arguments: the *config* and *options* objects.
 
 The resulting task's name for a given config object is `<taskName>:<config.alias>` so make sure to provide an alias.
@@ -118,6 +118,10 @@ bucket('scripts', scripts)
 bucket.addTask('scripts', { alias: 'vendors', src: 'src/vendors/*.js', dest: 'dist' })
 bucket.addTask('scripts', { alias: 'app', src: 'src/app/*.js', dest: 'dist' })
 ```
+
+### bucket.addTasks(taskName, configs)
+
+Alias of `bucket.addTask()`.
 
 ### bucket.options(options)
 
@@ -150,8 +154,8 @@ bucket.setDefaultTask([
 ### 1.0.0 - Unreleased
 
 * [x] fix "root" task to properly run matching tasks
-* [ ] **addTask():** also accepts an array
-  * [ ] add `addTasks()` as an alias of `addTask()`
+* [x] **addTask():** also accepts an array
+  * [x] add `addTasks()` as an alias of `addTask()`
 * [ ] **config.alias:** can be of three types
   * [ ] string: task name's suffix
   * [ ] regexp: the first matched result is used as the suffix
@@ -159,8 +163,7 @@ bucket.setDefaultTask([
 * [ ] **bucket():** third argument is now a "config" object
   * [ ] `config.description`: displayed by the "help" task
   * [ ] `config.alias`: default alias, used when a config object misses an alias property
-  * [ ] no more add tasks
-* [ ] **api:** methods are chainable (except getters such as `bucket.options()`)
+  * [ ] no more add tasks but returns the api
 
 ### 0.0.3 - 2015-12-05
 
