@@ -108,7 +108,12 @@ bucket('scripts', scripts, [
 Calls the factory registered under the name of `taskName` to create a task for each config of `configs`.
 The factory receives two arguments: the *config* and *options* objects.
 
-The resulting task's name for a given config object is `<taskName>:<config.alias>` so make sure to provide an alias.
+The resulting task's name for a given config object is `<taskName>:<config.alias>` where `config.alias` can be of two types:
+
+* **string**: used as a suffix
+* **function**: return value is used as a suffix (the function is called when creating the task and receives the config object as only argument)
+
+If the config object misses an alias, the task's name would be `<taskName>` (overwriting the "root" task).
 
 ```javascript
 import bucket from 'gulp-bucket'
@@ -156,10 +161,9 @@ bucket.setDefaultTask([
 * [x] fix "root" task to properly run matching tasks
 * [x] **addTask():** also accepts an array
   * [x] add `addTasks()` as an alias of `addTask()`
-* [ ] **config.alias:** can be of three types
-  * [ ] string: task name's suffix
-  * [ ] regexp: the first matched result is used as the suffix
-  * [ ] function: the return value is used as the suffix (the function is called on the creation of the task and receives a config object)
+* [x] **config.alias:** can be of two types
+  * [x] string: task name's suffix
+  * [x] function: the return value is used as the suffix (the function is called on the creation of the task and receives a config object)
 * [ ] **bucket():** third argument is now a "config" object
   * [ ] `config.description`: displayed by the "help" task
   * [ ] `config.alias`: default alias, used when a config object misses an alias property

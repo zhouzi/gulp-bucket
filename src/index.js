@@ -22,7 +22,7 @@ function addTask (taskName, configs) {
     let task = sequence.pop()
     let deps = _.filter(sequence, _.isString)
 
-    if (config.alias != null) taskName += ':' + config.alias
+    taskName = utils.getTaskName(taskName, config)
 
     gulp.task(taskName, deps, task)
     return taskName
