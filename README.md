@@ -147,6 +147,21 @@ bucket.setDefaultTask([
 
 ## Change Log
 
+### 1.0.0 - Unreleased
+
+* [ ] fix "root" task to properly run matching tasks
+* [ ] **addTask():** also accepts an array
+  * [ ] add `addTasks()` as an alias of `addTask()`
+* [ ] **config.alias:** can be of three types
+  * [ ] string: task name's suffix
+  * [ ] regexp: the first matched result is used as the suffix
+  * [ ] function: the return value is used as the suffix (the function is called on the creation of the task and receives a config object)
+* [ ] **bucket():** third argument is now a "config" object
+  * [ ] `config.description`: displayed by the "help" task
+  * [ ] `config.alias`: default alias, used when a config object misses an alias property
+  * [ ] no more add tasks
+* [ ] **api:** methods are chainable (except getters such as `bucket.options()`)
+
 ### 0.0.3 - 2015-12-05
 
 *First tracked release...*
