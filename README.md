@@ -149,7 +149,7 @@ bucket.setDefaultTask([
 
 ### 1.0.0 - Unreleased
 
-* [ ] fix "root" task to properly run matching tasks
+* [x] fix "root" task to properly run matching tasks
 * [ ] **addTask():** also accepts an array
   * [ ] add `addTasks()` as an alias of `addTask()`
 * [ ] **config.alias:** can be of three types
