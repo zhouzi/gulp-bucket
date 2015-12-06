@@ -55,6 +55,11 @@ describe('gulp-bucket', function () {
 
       expect(spy).toHaveBeenCalledWith(config, bucket.options())
     })
+
+    it('should create an alias from a function', function () {
+      bucket.addTask('ddd', { alias () { return 'fn' } })
+      expect(getTasks()).toContain('ddd:fn')
+    })
   })
 
   describe('has a options method that', function () {
