@@ -3,21 +3,23 @@ import gulp from 'gulp'
 import utils from './lib/utils'
 import help from './tasks/help'
 
-let factories = {}
+let definitions = {}
 let options = {}
 
-function bucket (taskName, taskFactory, configs) {
-  factories[taskName] = taskFactory
-  utils.createRootTask(gulp, taskName)
+function bucket (definition, configs) {
+  let { name } = definition
+  definitions[name] = definition
 
-  return addTask(taskName, configs)
+  utils.createRootTask(gulp, name)
+
+  return addTask(name, configs)
 }
 
 function addTask (taskName, configs) {
   if (configs == null) return []
   if (!_.isArray(configs)) configs = [configs]
 
-  let factory = factories[taskName]
+  let factory = definitions[taskName].factory
 
   return _.map(configs, function (config) {
     let sequence = _.flatten(factory(config, options), true)
@@ -42,8 +44,8 @@ function setDefaultTask (...deps) {
 bucket.addTask = bucket.addTasks = addTask
 bucket.options = setOptions
 bucket.setDefaultTask = setDefaultTask
-bucket.getDefinitions = function () { return factories }
+bucket.getDefinitions = function () { return definitions }
 
-bucket('help', help, {})
+bucket({ name: 'help', factory: help }, {})
 
 export default bucket

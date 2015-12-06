@@ -8,7 +8,7 @@ function getTasks () {
   return _.keys(gulp.tasks)
 }
 
-const definition = function () {
+const factory = function () {
   return [
     function () {
       return 'foo'
@@ -23,13 +23,15 @@ describe('gulp-bucket', function () {
 
   describe('is a function that', function () {
     it('should register a definition', function () {
-      bucket('foo', definition)
-      expect(bucket.getDefinitions().foo).toBe(definition)
+      let def = { name: 'foo', factory }
+
+      bucket(def)
+      expect(bucket.getDefinitions().foo).toBe(def)
     })
 
     it('should create tasks', function () {
-      bucket('bar', definition, [{ alias: 'baz' }])
-      bucket('abc', definition, { alias: 'quz' })
+      bucket({ name: 'bar', factory }, [{ alias: 'baz' }])
+      bucket({ name: 'abc', factory }, { alias: 'quz' })
 
       expect(getTasks()).toContain('bar:baz', 'abc:quz')
     })
@@ -46,7 +48,7 @@ describe('gulp-bucket', function () {
     it('should calls the factory when adding a task', function () {
       let spy = jasmine.createSpy('factory')
 
-      bucket('ddd', spy)
+      bucket({ name: 'ddd', factory: spy })
 
       let config = { alias: 'eee' }
       bucket.addTask('ddd', config)

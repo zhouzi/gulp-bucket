@@ -7,7 +7,7 @@ import bucket from '../../src/index'
 
 export default function (config, options) {
   return [
-    options.env === 'prod' && bucket('copy', copyTask, config),
+    options.env === 'prod' && bucket({ name: 'copy', factory: copyTask }, config),
     function () {
       return gulp
         .src(config.src)

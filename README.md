@@ -164,9 +164,11 @@ bucket.setDefaultTask([
 * [x] **config.alias:** can be of two types
   * [x] string: task name's suffix
   * [x] function: the return value is used as the suffix (the function is called on the creation of the task and receives a config object)
-* [ ] **bucket():** third argument is now a "config" object
-  * [ ] `config.description`: displayed by the "help" task
-  * [ ] `config.alias`: default alias, used when a config object misses an alias property
+* [ ] **bucket():** now accepts two argument: a definition and a configuration (or a list of configurations)
+  * [x] `definition.name`: task's prefix
+  * [x] `definition.factory`: factory to be called when creating a task
+  * [ ] `definition.description`: displayed by the "help" task
+  * [ ] `definition.alias`: default alias, used when a config object misses an alias property
   * [ ] no more add tasks but returns the api
 * [x] improve "test suite"
 
