@@ -46,6 +46,6 @@ bucket.options = setOptions
 bucket.setDefaultTask = setDefaultTask
 bucket.getDefinitions = function () { return definitions }
 
-bucket({ name: 'help', factory: help }, {})
+bucket({ name: 'help', factory: help, description: 'Display available tasks' }, {})
 
 export default bucket

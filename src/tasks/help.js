@@ -2,11 +2,13 @@ import 'colors'
 
 import _ from 'lodash'
 import gulp from 'gulp'
+import bucket from '../index'
 import utils from '../lib/utils'
 
 export default function () {
   return [
     function (callback) {
+      let definitions = bucket.getDefinitions()
       let tasks = utils.getTasks(gulp)
       let groups =
         _
@@ -28,13 +30,17 @@ export default function () {
       _.forEach(groups, group => {
         _.forEach(group, function (item) {
           let partials = item.split(':')
-          let prefix = partials.shift().bold.cyan
-          let suffix =
-            partials.length
-              ? ':' + partials.join(':').magenta
-              : ''
+          let prefix = partials.shift()
+          let suffix = partials.length ? ':' + partials.join(':') : ''
 
-          console.log(prefix + suffix)
+          let definition = definitions[prefix]
+          let desc = ''
+
+          if (definition && definition.description) {
+            desc += ` - ${definitions[prefix].description}`
+          }
+
+          console.log(prefix.bold.cyan + suffix.magenta + desc)
         })
 
         console.log('---'.gray)
