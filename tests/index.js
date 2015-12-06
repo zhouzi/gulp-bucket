@@ -1,4 +1,4 @@
-/* global describe, it, expect */
+/* global jasmine, describe, it, expect, spyOn */
 
 import _ from 'lodash'
 import gulp from 'gulp'

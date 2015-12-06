@@ -17,7 +17,7 @@ function createRootTask (gulp, taskName) {
   })
 }
 
-function getTaskName (prefix, config)  {
+function getTaskName (prefix, config) {
   let suffix = null
 
   if (_.isFunction(config.alias)) suffix = config.alias(config)
