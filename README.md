@@ -168,7 +168,7 @@ bucket.setDefaultTask([
   * [ ] `config.description`: displayed by the "help" task
   * [ ] `config.alias`: default alias, used when a config object misses an alias property
   * [ ] no more add tasks but returns the api
-* [ ] improve "test suite"
+* [x] improve "test suite"
 
 ### 0.0.3 - 2015-12-05
 

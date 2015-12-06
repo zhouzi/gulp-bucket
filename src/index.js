@@ -6,7 +6,7 @@ import help from './tasks/help'
 let factories = {}
 let options = {}
 
-function bucket (taskName, taskFactory, configs = [{}]) {
+function bucket (taskName, taskFactory, configs) {
   factories[taskName] = taskFactory
   utils.createRootTask(gulp, taskName)
 
@@ -14,18 +14,19 @@ function bucket (taskName, taskFactory, configs = [{}]) {
 }
 
 function addTask (taskName, configs) {
+  if (configs == null) return []
   if (!_.isArray(configs)) configs = [configs]
 
+  let factory = factories[taskName]
+
   return _.map(configs, function (config) {
-    let factory = factories[taskName]
     let sequence = _.flatten(factory(config, options), true)
     let task = sequence.pop()
     let deps = _.filter(sequence, _.isString)
+    let fullTaskName = utils.getTaskName(taskName, config)
 
-    taskName = utils.getTaskName(taskName, config)
-
-    gulp.task(taskName, deps, task)
-    return taskName
+    gulp.task(fullTaskName, deps, task)
+    return fullTaskName
   })
 }
 
@@ -41,6 +42,8 @@ function setDefaultTask (...deps) {
 bucket.addTask = bucket.addTasks = addTask
 bucket.options = setOptions
 bucket.setDefaultTask = setDefaultTask
-bucket('help', help)
+bucket.getDefinitions = function () { return factories }
+
+bucket('help', help, {})
 
 export default bucket
