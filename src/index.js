@@ -19,13 +19,14 @@ function addTask (taskName, configs) {
   if (configs == null) return []
   if (!_.isArray(configs)) configs = [configs]
 
-  let factory = definitions[taskName].factory
+  let definition = definitions[taskName]
+  let factory = definition.factory
 
   return _.map(configs, function (config) {
     let sequence = _.flatten(factory(config, options), true)
     let task = sequence.pop()
     let deps = _.filter(sequence, _.isString)
-    let fullTaskName = utils.getTaskName(taskName, config)
+    let fullTaskName = utils.getTaskName(taskName, _.assign({ alias: definition.alias }, config))
 
     gulp.task(fullTaskName, deps, task)
     return fullTaskName

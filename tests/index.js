@@ -60,6 +60,11 @@ describe('gulp-bucket', function () {
       bucket.addTask('ddd', { alias () { return 'fn' } })
       expect(getTasks()).toContain('ddd:fn')
     })
+
+    it('should use default alias when it\'s missing', function () {
+      bucket({ name: 'fff', factory, alias () { return 'defaultAlias' } }, {})
+      expect(getTasks()).toContain('fff', 'fff:defaultAlias')
+    })
   })
 
   describe('has a options method that', function () {
