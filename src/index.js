@@ -59,6 +59,7 @@ function getTasks (prefix) {
 function getTaskName (prefix, config) {
   let suffix = null
 
+  if (_.isString(config)) suffix = config
   if (_.isFunction(config.alias)) suffix = config.alias(config)
   if (_.isString(config.alias)) suffix = config.alias
 

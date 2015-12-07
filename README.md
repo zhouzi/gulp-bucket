@@ -173,9 +173,11 @@ bucket.setDefaultTask([
 * [x] **getTasks()**: returns the full list of gulp tasks unless one argument is provided
   * [x] string: returns tasks with name starting with "string"
   * [x] function: used to filter the returned tasks
-* [ ] **getTaskName**: returns the task name for prefix/alias, accepts two arguments
-  * [ ] prefix: the task's definition name
-  * [ ] alias: the task alias
+* [x] **getTaskName**: returns the task name for prefix/alias, accepts two arguments
+  * [x] prefix: the task's definition name
+  * [x] alias: the task alias
+    * [x] string: the task suffix
+    * [x] object: a configuration from which to retrieve the suffix
 
 ### 0.0.3 - 2015-12-05
 

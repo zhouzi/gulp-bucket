@@ -108,4 +108,14 @@ describe('gulp-bucket', function () {
       expect(bucket.getTasks((task) => _.startsWith(task, 'eee:'))).toEqual(['eee:hello'])
     })
   })
+
+  describe('has a getTaskName method that', function () {
+    it('should return the name for a given prefix and suffix', function () {
+      expect(bucket.getTaskName('foo', 'bar')).toBe('foo:bar')
+    })
+
+    it('should return the name for a given name and configuration object', function () {
+      expect(bucket.getTaskName('eee', { alias: 'foo' })).toBe('eee:foo')
+    })
+  })
 })
