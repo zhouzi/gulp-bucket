@@ -1,6 +1,5 @@
 import _ from 'lodash'
 import gulp from 'gulp'
-import utils from './lib/utils'
 import help from './tasks/help'
 
 const definitions = {}
@@ -25,7 +24,7 @@ function addTask (taskName, configs) {
     const sequence = _.flatten(factory(config, options), true)
     const task = sequence.pop()
     const deps = _.filter(sequence, _.isString)
-    const fullTaskName = utils.getTaskName(taskName, _.assign({ alias }, config))
+    const fullTaskName = getTaskName(taskName, _.assign({ alias }, config))
 
     gulp.task(fullTaskName, deps, task)
     return fullTaskName
@@ -57,11 +56,21 @@ function getTasks (prefix) {
   return []
 }
 
+function getTaskName (prefix, config) {
+  let suffix = null
+
+  if (_.isFunction(config.alias)) suffix = config.alias(config)
+  if (_.isString(config.alias)) suffix = config.alias
+
+  return suffix ? `${prefix}:${suffix}` : prefix
+}
+
 bucket.addTask = bucket.addTasks = addTask
 bucket.options = setOptions
 bucket.setDefaultTask = setDefaultTask
 bucket.getDefinitions = () => definitions
 bucket.getTasks = getTasks
+bucket.getTaskName = getTaskName
 
 bucket({ name: 'help', factory: help, description: 'Display available tasks' }, {})
 
