@@ -107,6 +107,10 @@ describe('gulp-bucket', function () {
     it('should filter available tasks with a given function', function () {
       expect(bucket.getTasks((task) => _.startsWith(task, 'eee:'))).toEqual(['eee:hello'])
     })
+
+    it('should return tasks that match a regepx', function () {
+      expect(bucket.getTasks(/^eee$/)).toEqual(['eee'])
+    })
   })
 
   describe('has a getTaskName method that', function () {

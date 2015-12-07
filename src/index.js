@@ -45,6 +45,10 @@ function getTasks (prefix) {
 
   if (prefix == null) return tasks
 
+  if (_.isRegExp(prefix)) {
+    return _.filter(tasks, (task) => prefix.test(task))
+  }
+
   if (_.isString(prefix)) {
     return _.filter(tasks, (task) => _.startsWith(task, prefix))
   }
