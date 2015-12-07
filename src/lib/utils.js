@@ -1,21 +1,5 @@
 import _ from 'lodash'
-
-function getTasks (gulp) {
-  return _.keys(gulp.tasks)
-}
-
-function hasTask (gulp, taskName) {
-  const tasks = getTasks(gulp)
-  return _.includes(tasks, taskName)
-}
-
-function createRootTask (gulp, taskName) {
-  gulp.task(taskName, function () {
-    const tasks = getTasks(gulp)
-    const matchingTasks = _.filter(tasks, (task) => _.startsWith(task, taskName))
-    return gulp.start(matchingTasks)
-  })
-}
+import bucket from '../index'
 
 function getTaskName (prefix, config) {
   let suffix = null
@@ -26,4 +10,4 @@ function getTaskName (prefix, config) {
   return suffix ? `${prefix}:${suffix}` : prefix
 }
 
-export default { getTasks, hasTask, createRootTask, getTaskName }
+export default { getTaskName }

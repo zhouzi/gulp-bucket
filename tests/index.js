@@ -93,4 +93,19 @@ describe('gulp-bucket', function () {
       expect(gulp.task).toHaveBeenCalledWith('default', ['foo', 'bar', 'quz', 'baz'])
     })
   })
+
+  describe('has a getTasks method that', function () {
+    it('should return the full list of tasks', function () {
+      expect(bucket.getTasks()).toEqual(getTasks())
+    })
+
+    it('should return tasks with a given prefix', function () {
+      bucket({ name: 'eee', factory }, [{ alias: 'hello' }])
+      expect(bucket.getTasks('eee:')).toEqual(['eee:hello'])
+    })
+
+    it('should filter available tasks with a given function', function () {
+      expect(bucket.getTasks((task) => _.startsWith(task, 'eee:'))).toEqual(['eee:hello'])
+    })
+  })
 })

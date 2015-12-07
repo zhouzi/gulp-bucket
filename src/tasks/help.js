@@ -3,13 +3,12 @@ import 'colors'
 import _ from 'lodash'
 import gulp from 'gulp'
 import bucket from '../index'
-import utils from '../lib/utils'
 
 export default function () {
   return [
     function (callback) {
       let definitions = bucket.getDefinitions()
-      let tasks = utils.getTasks(gulp)
+      let tasks = bucket.getTasks()
       let groups =
         _
           .chain(tasks)

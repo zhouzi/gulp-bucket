@@ -10,7 +10,7 @@ function bucket (definition, configs) {
   let { name } = definition
   definitions[name] = definition
 
-  utils.createRootTask(gulp, name)
+  gulp.task(name, () => gulp.start(getTasks(name)))
 
   return addTask(name, configs)
 }
@@ -42,10 +42,27 @@ function setDefaultTask (...deps) {
   gulp.task('default', _.flatten(deps, true))
 }
 
+function getTasks (prefix) {
+  let tasks = _.keys(gulp.tasks)
+
+  if (prefix == null) return tasks
+
+  if (_.isString(prefix)) {
+    return _.filter(tasks, (task) => _.startsWith(task, prefix))
+  }
+
+  if (_.isFunction(prefix)) {
+    return _.filter(tasks, prefix)
+  }
+
+  return []
+}
+
 bucket.addTask = bucket.addTasks = addTask
 bucket.options = setOptions
 bucket.setDefaultTask = setDefaultTask
 bucket.getDefinitions = function () { return definitions }
+bucket.getTasks = getTasks
 
 bucket({ name: 'help', factory: help, description: 'Display available tasks' }, {})
 
