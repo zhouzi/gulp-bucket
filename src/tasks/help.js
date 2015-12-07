@@ -1,7 +1,6 @@
 import 'colors'
 
 import _ from 'lodash'
-import gulp from 'gulp'
 import bucket from '../index'
 
 export default function () {
