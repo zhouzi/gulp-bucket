@@ -30,7 +30,7 @@ export default function () {
         _.forEach(group, function (item) {
           let partials = item.split(':')
           let prefix = partials.shift()
-          let suffix = partials.length ? ':' + partials.join(':') : ''
+          let suffix = partials.join(':')
 
           let definition = definitions[prefix]
           let desc = ''
@@ -39,7 +39,7 @@ export default function () {
             desc += ` - ${definitions[prefix].description}`
           }
 
-          console.log(prefix.bold.cyan + suffix.magenta + desc)
+          console.log(prefix.bold.cyan + (suffix ? ':' + suffix.magenta : '') + desc)
         })
 
         console.log('---'.gray)
