@@ -9,7 +9,9 @@ function bucket (definition, configs) {
   const { name } = definition
   definitions[name] = definition
 
-  gulp.task(name, () => gulp.start(getTasks(name)))
+  if (!_.includes(getTasks(), name)) {
+    gulp.task(name, () => gulp.start(getTasks(name)))
+  }
 
   return addTask(name, configs)
 }
