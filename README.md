@@ -171,7 +171,7 @@ bucket.setDefaultTask([
   * [x] `definition.alias`: default alias, used when a config object misses an alias property
 * [x] improve "test suite"
 * [x] **getTasks()**: returns the full list of gulp tasks unless one argument is provided
-  * [ ] string: returns tasks prefixed by "string"
+  * [x] string: returns tasks prefixed by "string"
   * [x] function: used to filter the returned tasks
   * [x] regexp: returns tasks that match the regexp
 * [x] **getTaskName**: returns the task name for prefix/alias, accepts two arguments

@@ -2,6 +2,7 @@ import _ from 'lodash'
 import gulp from 'gulp'
 import help from './tasks/help'
 
+const separator = ':'
 const definitions = {}
 let options = {}
 
@@ -52,6 +53,7 @@ function getTasks (prefix) {
   }
 
   if (_.isString(prefix)) {
+    prefix += separator
     return _.filter(tasks, (task) => _.startsWith(task, prefix))
   }
 
@@ -69,7 +71,7 @@ function getTaskName (prefix, config) {
   if (_.isFunction(config.alias)) suffix = config.alias(config)
   if (_.isString(config.alias)) suffix = config.alias
 
-  return suffix ? `${prefix}:${suffix}` : prefix
+  return suffix ? prefix + separator + suffix : prefix
 }
 
 bucket.addTask = bucket.addTasks = addTask

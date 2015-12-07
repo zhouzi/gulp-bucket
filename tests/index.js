@@ -101,7 +101,7 @@ describe('gulp-bucket', function () {
 
     it('should return tasks with a given prefix', function () {
       bucket({ name: 'eee', factory }, [{ alias: 'hello' }])
-      expect(bucket.getTasks('eee:')).toEqual(['eee:hello'])
+      expect(bucket.getTasks('eee')).toEqual(['eee:hello'])
     })
 
     it('should filter available tasks with a given function', function () {
