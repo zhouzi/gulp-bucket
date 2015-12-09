@@ -117,4 +117,17 @@ describe('gulp-bucket', function () {
       expect(bucket.tasks('foo:q')).toEqual(['foo:quz'])
     })
   })
+
+  describe('has a name function that', function () {
+    it('should return a concatenated task name', function () {
+      expect(bucket.name('foo', 'bar')).toBe('foo:bar')
+    })
+
+    it('should return a simple task name when suffix is not provided', function () {
+      expect(bucket.name('foo')).toBe('foo')
+      expect(bucket.name('foo', null)).toBe('foo')
+      expect(bucket.name('foo', undefined)).toBe('foo')
+      expect(bucket.name('foo', '')).toBe('foo')
+    })
+  })
 })

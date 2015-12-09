@@ -13,7 +13,7 @@ function Definition (name, factory) {
       if (!configs.length) configs.push({})
 
       return _.map(configs, function (config) {
-        const taskName = name + (config.alias ? ':' + config.alias : '')
+        const taskName = api.name(name, config.alias)
         const deps = _.flatten(factory(config, api.options()), true)
         const fn = _.isFunction(_.last(deps)) ? deps.pop() : _.noop
 
@@ -66,6 +66,10 @@ const api = {
     if (name == null) return tasks
 
     return _.filter(tasks, (task) => _.startsWith(task, name))
+  },
+
+  name (prefix, suffix) {
+    return suffix ? prefix + ':' + suffix : prefix
   }
 }
 
