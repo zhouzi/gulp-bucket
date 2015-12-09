@@ -100,6 +100,7 @@ export default function (config) {
 
 ```javascript
 import gulp from 'gulp'
+import bucket from 'gulp-bucket'
 import uglify from 'gulp-uglify'
 import lint from './lint'
 
@@ -152,3 +153,34 @@ export default function (config) {
   ]
 }
 ```
+
+### output
+
+gulp-bucket automatically creates a "help" task that, for this example, would output:
+
+```
+$ gulp help
+help
+---
+scripts
+scripts:vendors
+scripts:app
+---
+lint
+lint:app
+---
+styles
+styles:vendors
+styles:app
+---
+default
+---
+watch
+watch:scripts/vendors
+watch:scripts/app
+watch:styles/vendors
+watch:styles/app
+---
+```
+
+Note: the default task is created by `bucket.main()` which takes an array of dependencies, flatten it and use it for the "default" task.
