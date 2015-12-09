@@ -57,6 +57,14 @@ describe('gulp-bucket', function () {
       expect(spy.calls.length).toBe(3)
     })
 
+    it('should filter out falsy values', function () {
+      bucket
+        .factory('foo', _.noop)
+        .add(null, { alias: 'bar' }, false, { alias: 'quz' }, '', [{ alias: 'foo' }])
+
+      expect(_.keys(gulp.tasks)).toEqual(['help', 'foo', 'foo:bar', 'foo:quz', 'foo:foo'])
+    })
+
     it('should overwrite the main task if alias is missing', function () {
       bucket.factory('foo', () => ['bar:foo'])
       expect(gulp.tasks.foo.deps).toEqual([])

@@ -32,7 +32,8 @@ const api = {
   },
 
   add (...configs) {
-    configs = _.flatten(configs, true)
+    configs = _(configs).flatten(true).filter(_.identity).value()
+
     if (!configs.length) configs.push({})
 
     return _.map(configs, function (config) {
