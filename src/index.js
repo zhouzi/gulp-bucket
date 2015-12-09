@@ -8,13 +8,13 @@ let gulp
 function Definition (name, factory) {
   return {
     add (...configs) {
-      configs = _(configs).flatten(true).filter(_.identity).value()
+      configs = _.flatten(configs, true)
 
       if (!configs.length) configs.push({})
 
       return _.map(configs, function (config) {
         const taskName = api.name(name, config.alias)
-        const deps = _.flatten(factory(config, api.options()), true)
+        const deps = _(factory(config, api.options())).flatten(true).filter(_.identity).value()
         const fn = _.isFunction(_.last(deps)) ? deps.pop() : _.noop
 
         gulp.task(taskName, deps, fn)
