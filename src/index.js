@@ -1,86 +1,69 @@
 import _ from 'lodash'
-import gulp from 'gulp'
 import help from './tasks/help'
 
-const separator = ':'
+const options = {}
 const definitions = {}
-let options = {}
+let current
+let gulp
 
-function bucket (definition, configs) {
-  const { name } = definition
-  definitions[name] = definition
+const api = {
+  use (_gulp) {
+    gulp = _gulp
 
-  if (!_.includes(getTasks(), name)) {
-    gulp.task(name, () => gulp.start(getTasks(name)))
+    api
+      .factory('help', help)
+      .add()
+
+    return api
+  },
+
+  factory (name, factory) {
+    if (_.isFunction(factory)) definitions[name] = { name, factory }
+    current = definitions[name]
+
+    const tasks = api.tasks()
+    if (!_.includes(tasks, name)) {
+      gulp.task(name, function () {
+        gulp.start(api.tasks(name + ':'))
+      })
+    }
+
+    return api
+  },
+
+  add (...configs) {
+    configs = _.flatten(configs, true)
+    if (!configs.length) configs.push({})
+
+    return _.map(configs, function (config) {
+      const taskName = current.name + (config.alias ? ':' + config.alias : '')
+      const deps = _.flatten(current.factory(config, api.options()), true)
+      const fn = _.isFunction(_.last(deps)) ? deps.pop() : _.noop
+
+      gulp.task(taskName, deps, fn)
+      return taskName
+    })
+  },
+
+  main (...tasks) {
+    gulp.task('default', _.flatten(tasks, true))
+    return api
+  },
+
+  options () {
+    if (arguments.length) _.assign(options, _.first(arguments))
+    else return options
+
+    return api
+  },
+
+  tasks (name) {
+    const tasks = _.keys(gulp.tasks)
+
+    if (name == null) return tasks
+
+    return _.filter(tasks, (task) => _.startsWith(task, name))
   }
-
-  return addTask(name, configs)
 }
 
-function addTask (taskName, configs) {
-  if (configs == null) return []
-  if (!_.isArray(configs)) configs = [configs]
-
-  const { alias, factory } = definitions[taskName]
-
-  return _.map(configs, function (config) {
-    const sequence = _.flatten(factory(config, options), true)
-    const task = sequence.pop()
-    const deps = _.filter(sequence, _.isString)
-    const fullTaskName = getTaskName(taskName, _.assign({ alias }, config))
-
-    gulp.task(fullTaskName, deps, task)
-    return fullTaskName
-  })
-}
-
-function setOptions () {
-  if (arguments.length) options = arguments[0]
-  return options
-}
-
-function setDefaultTask (...deps) {
-  gulp.task('default', _.flatten(deps, true))
-}
-
-function getTasks (prefix) {
-  const tasks = _.keys(gulp.tasks)
-
-  if (prefix == null) return tasks
-
-  if (_.isRegExp(prefix)) {
-    return _.filter(tasks, (task) => prefix.test(task))
-  }
-
-  if (_.isString(prefix)) {
-    prefix += separator
-    return _.filter(tasks, (task) => _.startsWith(task, prefix))
-  }
-
-  if (_.isFunction(prefix)) {
-    return _.filter(tasks, prefix)
-  }
-
-  return []
-}
-
-function getTaskName (prefix, config) {
-  let suffix = null
-
-  if (_.isString(config)) suffix = config
-  if (_.isFunction(config.alias)) suffix = config.alias(config)
-  if (_.isString(config.alias)) suffix = config.alias
-
-  return suffix ? prefix + separator + suffix : prefix
-}
-
-bucket.addTask = bucket.addTasks = addTask
-bucket.options = setOptions
-bucket.setDefaultTask = setDefaultTask
-bucket.getDefinitions = () => definitions
-bucket.getTasks = getTasks
-bucket.getTaskName = getTaskName
-
-bucket({ name: 'help', factory: help, description: 'Display available tasks' }, {})
-
-export default bucket
+export default api

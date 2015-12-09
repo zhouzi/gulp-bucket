@@ -6,9 +6,8 @@ import bucket from '../index'
 export default function () {
   return [
     function (callback) {
-      let definitions = bucket.getDefinitions()
-      let tasks = bucket.getTasks()
-      let groups =
+      const tasks = bucket.tasks()
+      const groups =
         _
           .chain(tasks)
           .reduce(function (groups, taskName) {
@@ -27,18 +26,11 @@ export default function () {
 
       _.forEach(groups, group => {
         _.forEach(group, function (item) {
-          let partials = item.split(':')
-          let prefix = partials.shift()
-          let suffix = partials.join(':')
+          const partials = item.split(':')
+          const prefix = partials.shift()
+          const suffix = partials.join(':')
 
-          let definition = definitions[prefix]
-          let desc = ''
-
-          if (definition && definition.description) {
-            desc += ` - ${definitions[prefix].description}`
-          }
-
-          console.log(prefix.bold.cyan + (suffix ? ':' + suffix.magenta : '') + desc)
+          console.log(prefix.bold.cyan + (suffix ? ':' + suffix.magenta : ''))
         })
 
         console.log('---'.gray)

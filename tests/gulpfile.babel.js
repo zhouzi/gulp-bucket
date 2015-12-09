@@ -1,8 +1,13 @@
+import gulp from 'gulp'
 import bucket from '../src/index'
 import scripts from './tasks/scripts'
 
-bucket.options({ env: 'prod' })
+bucket
+  .use(gulp)
+  .options({ env: 'prod' })
 
-bucket.setDefaultTask([
-  bucket({ name: 'scripts', factory: scripts }, { alias: () => 'foo', src: 'tasks/*.js', dest: 'dist' })
-])
+bucket.main(
+  bucket
+    .factory('scripts', scripts)
+    .add({ alias: 'foo', src: 'tasks/*.js', dest: 'dist' })
+)

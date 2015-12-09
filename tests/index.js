@@ -1,125 +1,110 @@
-/* global jasmine, describe, it, expect, spyOn */
-
 import _ from 'lodash'
-import gulp from 'gulp'
 import bucket from '../src/index'
 
-function getTasks () {
-  return _.keys(gulp.tasks)
-}
-
-const factory = function () {
-  return [
-    function () {
-      return 'foo'
-    }
-  ]
-}
+let gulp
 
 describe('gulp-bucket', function () {
-  it('should have created a help task', function () {
-    expect(getTasks()).toEqual(['help'])
+  beforeEach(function () {
+    gulp = {
+      tasks: {},
+      task (name, deps, fn) {
+        if (_.isFunction(deps)) {
+          fn = deps
+          deps = []
+        }
+
+        this.tasks[name] = { deps, fn }
+      },
+      start () {}
+    }
+
+    bucket.use(gulp)
   })
 
-  describe('is a function that', function () {
-    it('should register a definition', function () {
-      let def = { name: 'foo', factory }
-
-      bucket(def)
-      expect(bucket.getDefinitions().foo).toBe(def)
-    })
-
-    it('should create tasks', function () {
-      bucket({ name: 'bar', factory }, [{ alias: 'baz' }])
-      bucket({ name: 'abc', factory }, { alias: 'quz' })
-
-      expect(getTasks()).toContain('bar:baz', 'abc:quz')
-    })
+  it('should have created a help task after .use()', function () {
+    expect(_.keys(gulp.tasks)).toEqual(['help'])
   })
 
-  describe('has a addTask method that', function () {
-    it('should create tasks', function () {
-      bucket.addTask('bar', [{ alias: 'aaa' }, { alias: 'bbb' }])
-      bucket.addTask('bar', { alias: 'ccc' })
-
-      expect(getTasks()).toContain('bar:aaa', 'bar:bbb', 'bar:ccc')
+  describe('has a factory function that', function () {
+    it('should return the api', function () {
+      expect(bucket.factory('foo', function () {})).toBe(bucket)
     })
 
-    it('should calls the factory when adding a task', function () {
-      let spy = jasmine.createSpy('factory')
+    it('should create a task that runs every tasks created from a given factory', function () {
+      spyOn(gulp, 'start')
 
-      bucket({ name: 'ddd', factory: spy })
+      bucket
+        .factory('foo', function () {})
+        .add({ alias: 'bar' }, { alias: 'quz' })
 
-      let config = { alias: 'eee' }
-      bucket.addTask('ddd', config)
-
-      expect(spy).toHaveBeenCalledWith(config, bucket.options())
-    })
-
-    it('should create an alias from a function', function () {
-      bucket.addTask('ddd', { alias () { return 'fn' } })
-      expect(getTasks()).toContain('ddd:fn')
-    })
-
-    it('should use default alias when it\'s missing', function () {
-      bucket({ name: 'fff', factory, alias () { return 'defaultAlias' } }, {})
-      expect(getTasks()).toContain('fff', 'fff:defaultAlias')
+      gulp.tasks.foo.fn()
+      expect(gulp.start).toHaveBeenCalledWith(['foo:bar', 'foo:quz'])
     })
   })
 
-  describe('has a options method that', function () {
-    it('should set and return the value of the options object', function () {
+  describe('has a add function that', function () {
+    it('should return the names of the created tasks', function () {
+      expect(bucket.factory('foo', function () {}).add({ alias: 'bar' })).toEqual(['foo:bar'])
+    })
+
+    it('should call a factory for each config of configs', function () {
+      const spy = jasmine.createSpy()
+
+      bucket
+        .factory('foo', spy)
+        .add({ alias: 'bar' }, { alias: 'quz' }, [{ alias: 'foo' }])
+
+      expect(spy.calls.length).toBe(3)
+    })
+
+    it('should overwrite the main task if alias is missing', function () {
+      bucket.factory('foo', () => ['bar:foo'])
+      expect(gulp.tasks.foo.deps).toEqual([])
+
+      bucket.add()
+      expect(gulp.tasks.foo.deps).toEqual(['bar:foo'])
+    })
+  })
+
+  describe('has a main function that', function () {
+    it('should return the api', function () {
+      expect(bucket.main()).toBe(bucket)
+    })
+
+    it('should create a default task from an array of task names', function () {
+      bucket.main(['foo'])
+      expect(gulp.tasks.default.deps).toEqual(['foo'])
+    })
+  })
+
+  describe('has a options function that', function () {
+    it('should return the options', function () {
       expect(bucket.options()).toEqual({})
+    })
 
-      let options = { foo: 'bar' }
-      expect(bucket.options(options)).toBe(options)
+    it('should merge the options and return the api', function () {
+      expect(bucket.options({ foo: 'bar' })).toBe(bucket)
+      expect(bucket.options()).toEqual({ foo: 'bar' })
+
+      bucket.options({ zup: 'zip' })
+      expect(bucket.options()).toEqual({ foo: 'bar', zup: 'zip' })
     })
   })
 
-  describe('has a setDefaultTask that', function () {
-    it('should create a default task', function () {
-      expect(gulp.tasks.default).toBeUndefined()
-
-      bucket.setDefaultTask([])
-
-      expect(gulp.tasks.default).not.toBeUndefined()
+  describe('has a tasks function that', function () {
+    beforeEach(function () {
+      bucket.factory('foo', function () {})
     })
 
-    it('should flatten the array of dependencies', function () {
-      spyOn(gulp, 'task')
-
-      bucket.setDefaultTask([['foo', 'bar'], ['quz', ['baz']]])
-
-      expect(gulp.task).toHaveBeenCalledWith('default', ['foo', 'bar', 'quz', 'baz'])
-    })
-  })
-
-  describe('has a getTasks method that', function () {
-    it('should return the full list of tasks', function () {
-      expect(bucket.getTasks()).toEqual(getTasks())
+    it('should return all the tasks', function () {
+      bucket.factory('foo').add({ alias: 'bar' }, { alias: 'quz' })
+      expect(bucket.tasks()).toEqual(['help', 'foo', 'foo:bar', 'foo:quz'])
     })
 
-    it('should return tasks with a given prefix', function () {
-      bucket({ name: 'eee', factory }, [{ alias: 'hello' }])
-      expect(bucket.getTasks('eee')).toEqual(['eee:hello'])
-    })
-
-    it('should filter available tasks with a given function', function () {
-      expect(bucket.getTasks((task) => _.startsWith(task, 'eee:'))).toEqual(['eee:hello'])
-    })
-
-    it('should return tasks that match a regepx', function () {
-      expect(bucket.getTasks(/^eee$/)).toEqual(['eee'])
-    })
-  })
-
-  describe('has a getTaskName method that', function () {
-    it('should return the name for a given prefix and suffix', function () {
-      expect(bucket.getTaskName('foo', 'bar')).toBe('foo:bar')
-    })
-
-    it('should return the name for a given name and configuration object', function () {
-      expect(bucket.getTaskName('eee', { alias: 'foo' })).toBe('eee:foo')
+    it('should return all the tasks prefixed by name', function () {
+      bucket.factory('foo').add({ alias: 'bar' }, { alias: 'quz' })
+      expect(bucket.tasks('foo:')).toEqual(['foo:bar', 'foo:quz'])
+      expect(bucket.tasks('foo:q')).toEqual(['foo:quz'])
     })
   })
 })
