@@ -2,6 +2,12 @@
   "name": "gulp-bucket",
   "version": "0.0.5",
   "description": "Maximize gulp tasks reusability.",
+  "keywords": [
+    "gulpplugin",
+    "task",
+    "reusable",
+    "module"
+  ],
   "main": "dist/index.js",
   "babel": {
     "presets": [
