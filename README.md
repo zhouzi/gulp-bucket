@@ -25,7 +25,7 @@ const lint = function (config) {
 
 const scripts = function (config, options) {
   return [
-    options.lint !== false ? lint(config) : null,
+    options.lint !== false ? bucket.factory('lint', lint).add(config) : null,
     function () {
       return gulp
         .src(config.src)
