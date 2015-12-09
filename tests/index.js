@@ -1,3 +1,5 @@
+/* global describe, beforeEach, it, expect, spyOn, jasmine */
+
 import _ from 'lodash'
 import bucket from '../src/index'
 
