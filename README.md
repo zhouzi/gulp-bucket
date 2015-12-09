@@ -66,13 +66,13 @@ bucket
 ```json
 {
   "js": [
-    { "alias": "vendors", src: "js/vendors/**/*.js", dest: "dist/js", lint: false },
-    { "alias": "app", src: "js/app/**/*.js", dest: "dist/js" }
+    { "alias": "vendors", "src": "js/vendors/**/*.js", "dest": "dist/js", "lint": false },
+    { "alias": "app", "src": "js/app/**/*.js", "dest": "dist/js" }
   ],
   
   "scss": [
-    { "alias": "vendors", src: "scss/vendors/**/*.scss", dest: "dist/css" },
-    { "alias": "app", src: "scss/app/**/*.scss", dest: "dist/css" }
+    { "alias": "vendors", "src": "scss/vendors/**/*.scss", "dest": "dist/css" },
+    { "alias": "app", "src": "scss/app/**/*.scss", "dest": "dist/css" }
   ]
 }
 ```
