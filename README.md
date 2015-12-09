@@ -2,9 +2,44 @@
 
 Maximize gulp tasks reusability.
 
+* [What problems does gulp-bucket solve?](#what-problems-does-gulp-bucket-solve)
+* [Example](#example)
+
+## What problems does gulp-bucket solve?
+
+**Code reusability**
+
+gulp-bucket offers a way to define a task once and reuse it as much as needed.
+You could even store them somewhere and easily reuse them on any project as a task definition is pretty agnostic.
+
+**Name spacing**
+
+You'll end up creating a few tasks with the same implementation so gulp-bucket name space those for you (it looks like `<factory>:<alias>`, e.g `styles:vendors`).
+
+**Tasks dependencies**
+
+Some tasks are dependent on the execution of others (e.g linting your javascript before bundling the application).
+A task's dependency is declared like `gulp.task('foo', [/*dependencies*/], function () {})`, dependencies being a list of task names.
+Going with this approach, you're probably defining the required tasks somewhere else and now you have to input their names.
+Your are creating a kind of "implicit" dependence.
+
+On the other hand, gulp-bucket allows you to define a task's dependencies right from the task itself.
+It means that a task implementation and requirements are all defined at the right place: where and when it's needed.
+
+**Implicit declarations**
+
+Whenever you create a new factory, gulp-bucket automatically creates a task that's going to run every tasks created from it.
+So basically, if you add a `scripts` factory and a `foo` task with it, you'll end up with two tasks: `scripts` and `scripts:foo`.
+In this case, `scripts` would run `scripts:foo`.
+
+**Listing tasks**
+
+After initing gulp-bucket by providing a gulp instance (via `gulp.use()`) it will create a "help" task.
+This task display and group all available tasks to the console (fancy colors included).
+
 ## Example
 
-### Structure
+**Structure**
 
 ```
 |__gulp/
@@ -18,7 +53,7 @@ Maximize gulp tasks reusability.
 |__gulpfile.babel.js
 ```
 
-### gulpfile.babel.js
+**gulpfile.babel.js**
 
 ```javascript
 import gulp from 'gulp'
@@ -61,7 +96,7 @@ bucket
   )
 ```
 
-### gulp/config.json
+**gulp/config.json**
 
 ```json
 {
@@ -77,7 +112,7 @@ bucket
 }
 ```
 
-### gulp/tasks/lint.js
+**gulp/tasks/lint.js**
 
 ```javascript
 import gulp from 'gulp'
@@ -96,7 +131,7 @@ export default function (config) {
 }
 ```
 
-### gulp/tasks/scripts.js
+**gulp/tasks/scripts.js**
 
 ```javascript
 import gulp from 'gulp'
@@ -119,7 +154,7 @@ export default function (config, options) {
 }
 ```
 
-### gulp/tasks/styles.js
+**gulp/tasks/styles.js**
 
 ```javascript
 import gulp from 'gulp'
@@ -139,7 +174,7 @@ export default function (config) {
 }
 ```
 
-### gulp/tasks/watch.js
+**gulp/tasks/watch.js**
 
 ```javascript
 import gulp from 'gulp'
@@ -154,7 +189,7 @@ export default function (config) {
 }
 ```
 
-### output
+**output**
 
 gulp-bucket automatically creates a "help" task that, for this example, would output:
 
