@@ -27,6 +27,7 @@
   },
   "scripts": {
     "test": "jest tests/index.js",
+    "gulp": "gulp --gulpfile tests/gulpfile.babel.js help && gulp --gulpfile tests/gulpfile.babel.js",
     "lint": "standard",
     "build": "babel src --out-dir dist",
     "prepublish": "npm run build"
