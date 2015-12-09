@@ -1,7 +1,7 @@
 {
   "name": "gulp-bucket",
-  "version": "0.0.3",
-  "description": "Highly reusable gulp task definition.",
+  "version": "0.0.4",
+  "description": "Maximize gulp tasks reusability.",
   "main": "dist/index.js",
   "babel": {
     "presets": [
