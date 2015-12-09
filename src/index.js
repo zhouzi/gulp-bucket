@@ -3,8 +3,26 @@ import help from './tasks/help'
 
 const options = {}
 const definitions = {}
-let current
 let gulp
+
+function Definition (name, factory) {
+  return {
+    add (...configs) {
+      configs = _(configs).flatten(true).filter(_.identity).value()
+
+      if (!configs.length) configs.push({})
+
+      return _.map(configs, function (config) {
+        const taskName = name + (config.alias ? ':' + config.alias : '')
+        const deps = _.flatten(factory(config, api.options()), true)
+        const fn = _.isFunction(_.last(deps)) ? deps.pop() : _.noop
+
+        gulp.task(taskName, deps, fn)
+        return taskName
+      })
+    }
+  }
+}
 
 const api = {
   use (_gulp) {
@@ -18,8 +36,7 @@ const api = {
   },
 
   factory (name, factory) {
-    if (_.isFunction(factory)) definitions[name] = { name, factory }
-    current = definitions[name]
+    if (_.isFunction(factory)) definitions[name] = Definition(name, factory)
 
     const tasks = api.tasks()
     if (!_.includes(tasks, name)) {
@@ -28,22 +45,7 @@ const api = {
       })
     }
 
-    return api
-  },
-
-  add (...configs) {
-    configs = _(configs).flatten(true).filter(_.identity).value()
-
-    if (!configs.length) configs.push({})
-
-    return _.map(configs, function (config) {
-      const taskName = current.name + (config.alias ? ':' + config.alias : '')
-      const deps = _.flatten(current.factory(config, api.options()), true)
-      const fn = _.isFunction(_.last(deps)) ? deps.pop() : _.noop
-
-      gulp.task(taskName, deps, fn)
-      return taskName
-    })
+    return definitions[name]
   },
 
   main (...tasks) {

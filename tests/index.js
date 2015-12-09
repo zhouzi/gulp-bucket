@@ -26,8 +26,8 @@ describe('gulp-bucket', function () {
   })
 
   describe('has a factory function that', function () {
-    it('should return the api', function () {
-      expect(bucket.factory('foo', function () {})).toBe(bucket)
+    it('should return a definition', function () {
+      expect(_.keys(bucket.factory('foo', _.noop))).toEqual(['add'])
     })
 
     it('should create a task that runs every tasks created from a given factory', function () {
@@ -69,7 +69,7 @@ describe('gulp-bucket', function () {
       bucket.factory('foo', () => ['bar:foo'])
       expect(gulp.tasks.foo.deps).toEqual([])
 
-      bucket.add()
+      bucket.factory('foo').add()
       expect(gulp.tasks.foo.deps).toEqual(['bar:foo'])
     })
   })
