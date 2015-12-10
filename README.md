@@ -143,11 +143,11 @@ export default function (config, options) {
   return [
     config.lint !== false ? bucket.factory('lint', lint).add(config) : null,
     function () {
-      const stream = gulp.src(config.src)
+      let stream = gulp.src(config.src)
       
-      if (options.build === true) stream.pipe(uglify())
+      if (options.build === true) stream = stream.pipe(uglify())
       
-      stream.pipe(gulp.dest(config.dest))
+      stream = stream.pipe(gulp.dest(config.dest))
       return stream
     }
   ]
