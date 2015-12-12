@@ -2,29 +2,46 @@
 
 Maximize gulp tasks reusability.
 
+* [Installation](#installation)
 * [What problems does gulp-bucket solve?](#what-problems-does-gulp-bucket-solve)
 * [Example](#example)
+
+## Installation
+
+```
+npm install gulp-bucket
+```
+
+You can then require gulp-bucket:
+
+```javascript
+var bucket = require('gulp-bucket').default // ES5
+import bucket from 'gulp-bucket' // ES6
+```
 
 ## What problems does gulp-bucket solve?
 
 **Code reusability**
 
-gulp-bucket offers a way to define a task once and reuse it as much as needed.
-You could even store them somewhere and easily reuse them on any project as a task definition is pretty agnostic.
-
-**Name spacing**
-
-You'll end up creating a few tasks with the same implementation so gulp-bucket name space those for you (it looks like `<factory>:<alias>`, e.g `styles:vendors`).
+gulp-bucket offers a way to define a task once and reuse it as much as needed by putting the emphasis on agnostic definitions. No more hard coded paths!
 
 **Tasks dependencies**
 
-Some tasks are dependent on the execution of others (e.g linting your javascript before bundling the application).
-A task's dependency is declared like `gulp.task('foo', [/*dependencies*/], function () {})`, dependencies being a list of task names.
-Going with this approach, you're probably defining the required tasks somewhere else and now you have to input their names.
-Your are creating a kind of "implicit" dependence.
+With gulp, a task's dependency is just a list of tasks names e.g: `gulp.task('foo', ['bar', 'quz'], function () {})`.
+So even if you are defining your tasks in separate file, you might still have to hard code the dependencies.
 
-On the other hand, gulp-bucket allows you to define a task's dependencies right from the task itself.
-It means that a task implementation and requirements are all defined at the right place: where and when it's needed.
+gulp-bucket tries to make this process simpler by allowing you to define a task's dependencies right from the task itself:
+
+```javascript
+function (config) {
+  return [
+    bucket.factory('lint', lint).add(config),
+    function () {}
+  ]
+}
+```
+
+*Have a look at the [example](#example) for more details.*
 
 **Implicit declarations**
 
