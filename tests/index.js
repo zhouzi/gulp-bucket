@@ -74,6 +74,14 @@ describe('gulp-bucket', function () {
       bucket.factory('foo').add()
       expect(gulp.tasks.foo.deps).toEqual(['bar:foo'])
     })
+
+    it('should return created tasks but not their dependencies', function () {
+      const foo = () => [_.noop]
+      const bar = (c) => [bucket.factory('foo', foo).add(c), _.noop]
+
+      expect(bucket.factory('bar', bar).add({ alias: 'quz' })).toEqual(['bar:quz'])
+      expect(gulp.tasks['bar:quz'].deps).toEqual(['foo:quz'])
+    })
   })
 
   describe('has a main function that', function () {
