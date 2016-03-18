@@ -1,17 +1,17 @@
-import 'colors'
+require('colors')
 
-import _ from 'lodash'
-import bucket from '../index'
+var _ = require('lodash')
+var bucket = require('./index')
 
-export default function () {
+function help () {
   return [
     function (callback) {
-      const tasks = bucket.tasks()
-      const groups =
+      var tasks = bucket.tasks()
+      var groups =
         _
           .chain(tasks)
           .reduce(function (groups, taskName) {
-            let prefix = taskName.split(':').shift()
+            var prefix = taskName.split(':').shift()
 
             if (groups[prefix] == null) groups[prefix] = []
             groups[prefix].push(taskName)
@@ -24,11 +24,11 @@ export default function () {
           }, [])
           .value()
 
-      _.forEach(groups, group => {
+      _.forEach(groups, function (group) {
         _.forEach(group, function (item) {
-          const partials = item.split(':')
-          const prefix = partials.shift()
-          const suffix = partials.join(':')
+          var partials = item.split(':')
+          var prefix = partials.shift()
+          var suffix = partials.join(':')
 
           console.log(prefix.bold.cyan + (suffix ? ':' + suffix.magenta : ''))
         })
@@ -40,3 +40,5 @@ export default function () {
     }
   ]
 }
+
+module.exports = help

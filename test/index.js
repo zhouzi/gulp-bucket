@@ -1,15 +1,16 @@
-/* global describe, beforeEach, it, expect, spyOn, jasmine */
+/* global describe, beforeEach, it */
 
-import _ from 'lodash'
-import bucket from '../src/index'
-
-let gulp
+var _ = require('lodash')
+var assert = require('assert')
+var sinon = require('sinon')
+var bucket = require('../index')
+var gulp
 
 describe('gulp-bucket', function () {
   beforeEach(function () {
     gulp = {
       tasks: {},
-      task (name, deps, fn) {
+      task: function task (name, deps, fn) {
         if (_.isFunction(deps)) {
           fn = deps
           deps = []
@@ -24,39 +25,39 @@ describe('gulp-bucket', function () {
   })
 
   it('should have created a help task after .use()', function () {
-    expect(_.keys(gulp.tasks)).toEqual(['help'])
+    assert.deepEqual(_.keys(gulp.tasks), ['help'])
   })
 
   describe('has a factory function that', function () {
     it('should return a definition', function () {
-      expect(_.keys(bucket.factory('foo', _.noop))).toEqual(['add'])
+      assert.deepEqual(_.keys(bucket.factory('foo', _.noop)), ['add'])
     })
 
     it('should create a task that runs every tasks created from a given factory', function () {
-      spyOn(gulp, 'start')
+      sinon.spy(gulp, 'start')
 
       bucket
         .factory('foo', function () {})
         .add({ alias: 'bar' }, { alias: 'quz' })
 
       gulp.tasks.foo.fn()
-      expect(gulp.start).toHaveBeenCalledWith(['foo:bar', 'foo:quz'])
+      assert.deepEqual(gulp.start.getCall(0).args, [['foo:bar', 'foo:quz']])
     })
   })
 
   describe('has a add function that', function () {
     it('should return the names of the created tasks', function () {
-      expect(bucket.factory('foo', function () {}).add({ alias: 'bar' })).toEqual(['foo:bar'])
+      assert.deepEqual(bucket.factory('foo', function () {}).add({ alias: 'bar' }), ['foo:bar'])
     })
 
     it('should call a factory for each config of configs', function () {
-      const spy = jasmine.createSpy()
+      var spy = sinon.spy()
 
       bucket
         .factory('foo', spy)
         .add({ alias: 'bar' }, { alias: 'quz' }, [{ alias: 'foo' }])
 
-      expect(spy.calls.length).toBe(3)
+      assert.equal(spy.called, true)
     })
 
     it('should create a task and filter out falsy dependencies', function () {
@@ -64,48 +65,48 @@ describe('gulp-bucket', function () {
         .factory('foo', function () { return [null, '', false, 'quz:baz', 0] })
         .add({ alias: 'bar' })
 
-      expect(gulp.tasks['foo:bar'].deps).toEqual(['quz:baz'])
+      assert.deepEqual(gulp.tasks['foo:bar'].deps, ['quz:baz'])
     })
 
     it('should overwrite the main task if alias is missing', function () {
-      bucket.factory('foo', () => ['bar:foo'])
-      expect(gulp.tasks.foo.deps).toEqual([])
+      bucket.factory('foo', function () { return ['bar:foo'] })
+      assert.deepEqual(gulp.tasks.foo.deps, [])
 
       bucket.factory('foo').add()
-      expect(gulp.tasks.foo.deps).toEqual(['bar:foo'])
+      assert(gulp.tasks.foo.deps, ['bar:foo'])
     })
 
     it('should return created tasks but not their dependencies', function () {
-      const foo = () => [_.noop]
-      const bar = (c) => [bucket.factory('foo', foo).add(c), _.noop]
+      var foo = function () { return [_.noop] }
+      var bar = function (c) { return [bucket.factory('foo', foo).add(c), _.noop] }
 
-      expect(bucket.factory('bar', bar).add({ alias: 'quz' })).toEqual(['bar:quz'])
-      expect(gulp.tasks['bar:quz'].deps).toEqual(['foo:quz'])
+      assert.deepEqual(bucket.factory('bar', bar).add({ alias: 'quz' }), ['bar:quz'])
+      assert.deepEqual(gulp.tasks['bar:quz'].deps, ['foo:quz'])
     })
   })
 
   describe('has a main function that', function () {
     it('should return the api', function () {
-      expect(bucket.main()).toBe(bucket)
+      assert.deepEqual(bucket.main(), bucket)
     })
 
     it('should create a default task from an array of task names', function () {
       bucket.main(['foo'])
-      expect(gulp.tasks.default.deps).toEqual(['foo'])
+      assert.deepEqual(gulp.tasks.default.deps, ['foo'])
     })
   })
 
   describe('has a options function that', function () {
     it('should return the options', function () {
-      expect(bucket.options()).toEqual({})
+      assert.deepEqual(bucket.options(), {})
     })
 
     it('should merge the options and return the api', function () {
-      expect(bucket.options({ foo: 'bar' })).toBe(bucket)
-      expect(bucket.options()).toEqual({ foo: 'bar' })
+      assert.deepEqual(bucket.options({ foo: 'bar' }), bucket)
+      assert.deepEqual(bucket.options(), { foo: 'bar' })
 
       bucket.options({ zup: 'zip' })
-      expect(bucket.options()).toEqual({ foo: 'bar', zup: 'zip' })
+      assert.deepEqual(bucket.options(), { foo: 'bar', zup: 'zip' })
     })
   })
 
@@ -116,26 +117,26 @@ describe('gulp-bucket', function () {
 
     it('should return all the tasks', function () {
       bucket.factory('foo').add({ alias: 'bar' }, { alias: 'quz' })
-      expect(bucket.tasks()).toEqual(['help', 'foo', 'foo:bar', 'foo:quz'])
+      assert.deepEqual(bucket.tasks(), ['help', 'foo', 'foo:bar', 'foo:quz'])
     })
 
     it('should return all the tasks prefixed by name', function () {
       bucket.factory('foo').add({ alias: 'bar' }, { alias: 'quz' })
-      expect(bucket.tasks('foo:')).toEqual(['foo:bar', 'foo:quz'])
-      expect(bucket.tasks('foo:q')).toEqual(['foo:quz'])
+      assert.deepEqual(bucket.tasks('foo:'), ['foo:bar', 'foo:quz'])
+      assert.deepEqual(bucket.tasks('foo:q'), ['foo:quz'])
     })
   })
 
   describe('has a name function that', function () {
     it('should return a concatenated task name', function () {
-      expect(bucket.name('foo', 'bar')).toBe('foo:bar')
+      assert.deepEqual(bucket.name('foo', 'bar'), 'foo:bar')
     })
 
     it('should return a simple task name when suffix is not provided', function () {
-      expect(bucket.name('foo')).toBe('foo')
-      expect(bucket.name('foo', null)).toBe('foo')
-      expect(bucket.name('foo', undefined)).toBe('foo')
-      expect(bucket.name('foo', '')).toBe('foo')
+      assert.deepEqual(bucket.name('foo'), 'foo')
+      assert.deepEqual(bucket.name('foo', null), 'foo')
+      assert.deepEqual(bucket.name('foo', undefined), 'foo')
+      assert.deepEqual(bucket.name('foo', ''), 'foo')
     })
   })
 })

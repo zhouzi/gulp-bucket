@@ -1,6 +1,6 @@
-import gulp from 'gulp'
-import bucket from '../src/index'
-import scripts from './tasks/scripts'
+var gulp = require('gulp')
+var bucket = require('../index')
+var scripts = require('./tasks/scripts')
 
 bucket
   .use(gulp)

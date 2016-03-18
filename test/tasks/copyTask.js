@@ -1,6 +1,6 @@
-import gulp from 'gulp'
+var gulp = require('gulp')
 
-export default function (config) {
+module.exports = function copyTask (config) {
   return [
     function () {
       return gulp
