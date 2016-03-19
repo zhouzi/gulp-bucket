@@ -3,29 +3,26 @@
 var _ = require('lodash')
 var assert = require('assert')
 var sinon = require('sinon')
-var bucket = require('../index')
-var gulp
+
+var gulp = {
+  tasks: {},
+  task: function task (name, deps, fn) {
+    if (_.isFunction(deps)) {
+      fn = deps
+      deps = []
+    }
+
+    this.tasks[name] = { deps, fn }
+  },
+  start () {}
+}
+
+var proxyquire = require('proxyquire')
+var bucket = proxyquire('../index', { gulp: gulp })
 
 describe('gulp-bucket', function () {
   beforeEach(function () {
-    gulp = {
-      tasks: {},
-      task: function task (name, deps, fn) {
-        if (_.isFunction(deps)) {
-          fn = deps
-          deps = []
-        }
-
-        this.tasks[name] = { deps, fn }
-      },
-      start () {}
-    }
-
-    bucket.use(gulp)
-  })
-
-  it('should have created a help task after .use()', function () {
-    assert.deepEqual(_.keys(gulp.tasks), ['help'])
+    gulp.tasks = {}
   })
 
   describe('has a factory function that', function () {
@@ -117,7 +114,7 @@ describe('gulp-bucket', function () {
 
     it('should return all the tasks', function () {
       bucket.factory('foo').add({ alias: 'bar' }, { alias: 'quz' })
-      assert.deepEqual(bucket.tasks(), ['help', 'foo', 'foo:bar', 'foo:quz'])
+      assert.deepEqual(bucket.tasks(), ['foo', 'foo:bar', 'foo:quz'])
     })
 
     it('should return all the tasks prefixed by name', function () {

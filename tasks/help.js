@@ -1,7 +1,7 @@
 require('colors')
 
 var _ = require('lodash')
-var bucket = require('./index')
+var bucket = require('../index')
 
 function help () {
   return [

@@ -1,8 +1,8 @@
 var _ = require('lodash')
+var gulp = require('gulp')
 
 var opts = {}
 var definitions = {}
-var gulp
 
 function Definition (factoryName, factory) {
   return {
@@ -24,12 +24,6 @@ function Definition (factoryName, factory) {
       })
     }
   }
-}
-
-function use (_gulp) {
-  gulp = _gulp
-  factory('help', require('./help')).add()
-  return this
 }
 
 function factory (factoryName, factory) {
@@ -78,7 +72,6 @@ function name (prefix, suffix) {
 }
 
 module.exports = {
-  use: use,
   factory: factory,
   main: main,
   options: options,

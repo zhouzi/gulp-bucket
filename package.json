@@ -45,6 +45,7 @@
     "gulp-uglify": "*",
     "mocha": "*",
     "pre-commit": "*",
+    "proxyquire": "*",
     "sinon": "*",
     "standard": "*"
   },
