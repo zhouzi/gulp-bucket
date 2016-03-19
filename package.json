@@ -11,7 +11,7 @@
   ],
   "main": "index.js",
   "files": [
-    "help.js",
+    "tasks",
     "index.js",
     "LICENSE",
     "package.json",
