@@ -15,15 +15,15 @@ npm install gulp-bucket
 You can then require gulp-bucket:
 
 ```javascript
-var bucket = require('gulp-bucket').default // ES5
-import bucket from 'gulp-bucket' // ES6
+var bucket = require('gulp-bucket')
 ```
 
 ## What problems does gulp-bucket solve?
 
 **Code reusability**
 
-gulp-bucket offers a way to define a task once and reuse it as much as needed by putting the emphasis on agnostic definitions. No more hard coded paths!
+gulp-bucket offers a way to define a task once and reuse it as much as needed by putting the emphasis on agnostic definitions.
+No more hard coded paths!
 
 **Tasks dependencies**
 
@@ -49,10 +49,12 @@ Whenever you create a new factory, gulp-bucket automatically creates a task that
 So basically, if you add a `scripts` factory and a `foo` task with it, you'll end up with two tasks: `scripts` and `scripts:foo`.
 In this case, `scripts` would run `scripts:foo`.
 
-**Listing tasks**
+**Available tasks**
 
-After initing gulp-bucket by providing a gulp instance (via `gulp.use()`) it will create a "help" task.
-This task display and group all available tasks to the console (fancy colors included).
+There are a few tasks that comes with `gulp-bucket`:
+
+* `tasks/help.js`: a task that display all available tasks with some fancy colors.
+  * Installation: `bucket.factory('help', require('gulp-bucket/tasks/help')).add()`
 
 ## Example
 
@@ -67,30 +69,28 @@ This task display and group all available tasks to the console (fancy colors inc
 |______watch.js
 |____config.json
 |__eslint.json
-|__gulpfile.babel.js
+|__gulpfile.js
 ```
 
-**gulpfile.babel.js**
+**gulpfile.js**
 
 ```javascript
-import gulp from 'gulp'
-import bucket from 'gulp-bucket'
-import yargs from 'yargs'
+var bucket = require('gulp-bucket')
+var yargs = require('yargs')
 
-import scripts from './gulp/tasks/scripts'
-import styles from './gulp/tasks/styles'
-import watch from './gulp/tasks/watch'
-import config from './gulp/config.json'
+var scripts = require('./gulp/tasks/scripts')
+var styles = require('./gulp/tasks/styles')
+var watch = require('./gulp/tasks/watch')
+var config = require('./gulp/config.json')
 
 bucket
-  .use(gulp)
   .options(yargs.argv)
-  
+
 bucket.main(
   bucket
     .factory('scripts', scripts)
-    .add(config.js), 
-    
+    .add(config.js),
+
   bucket
     .factory('styles', styles)
     .add(config.scss)
@@ -99,17 +99,21 @@ bucket.main(
 bucket
   .factory('watch', watch)
   .add(
-    config.js.map((config) => ({
-      alias: `scripts/${config.alias}`,
-      src: config.src,
-      deps: bucket.name('scripts', config.alias)
-    })),
-    
-    config.scss.map((config) => ({
-      alias: `styles/${config.alias}`,
-      src: config.src,
-      deps: bucket.name('styles', config.alias)
-    }))
+    config.js.map(function (config) {
+      return {
+        alias: 'scripts:' + config.alias,
+        src: config.src,
+        deps: bucket.name('scripts', config.alias)
+      }
+    }),
+
+    config.scss.map(function (config) {
+      return {
+        alias: 'styles:' + config.alias,
+        src: config.src,
+        deps: bucket.name('styles', config.alias)
+      }
+    })
   )
 ```
 
@@ -121,7 +125,7 @@ bucket
     { "alias": "vendors", "src": "js/vendors/**/*.js", "dest": "dist/js", "lint": false },
     { "alias": "app", "src": "js/app/**/*.js", "dest": "dist/js" }
   ],
-  
+
   "scss": [
     { "alias": "vendors", "src": "scss/vendors/**/*.scss", "dest": "dist/css" },
     { "alias": "app", "src": "scss/app/**/*.scss", "dest": "dist/css" }
@@ -132,10 +136,10 @@ bucket
 **gulp/tasks/lint.js**
 
 ```javascript
-import gulp from 'gulp'
-import eslint from 'gulp-eslint'
+var gulp = require('gulp')
+var eslint = require('gulp-eslint')
 
-export default function (config) {
+module.exports = function (config) {
   return [
     function () {
       return gulp
@@ -151,19 +155,19 @@ export default function (config) {
 **gulp/tasks/scripts.js**
 
 ```javascript
-import gulp from 'gulp'
-import bucket from 'gulp-bucket'
-import uglify from 'gulp-uglify'
-import lint from './lint'
+var gulp = require('gulp')
+var bucket = require('gulp-bucket')
+var uglify = require('gulp-uglify')
+var lint = require('./lint')
 
-export default function (config, options) {
+module.exports = function (config, options) {
   return [
     config.lint !== false ? bucket.factory('lint', lint).add(config) : null,
     function () {
       let stream = gulp.src(config.src)
-      
+
       if (options.build === true) stream = stream.pipe(uglify())
-      
+
       stream = stream.pipe(gulp.dest(config.dest))
       return stream
     }
@@ -174,11 +178,11 @@ export default function (config, options) {
 **gulp/tasks/styles.js**
 
 ```javascript
-import gulp from 'gulp'
-import sass from 'gulp-sass'
-import autoprefixer from 'gulp-autoprefixer'
+var gulp = require('gulp')
+var sass = require('gulp-sass')
+var autoprefixer = require('gulp-autoprefixer')
 
-export default function (config) {
+module.exports = function (config) {
   return [
     function () {
       return gulp
@@ -194,45 +198,16 @@ export default function (config) {
 **gulp/tasks/watch.js**
 
 ```javascript
-import gulp from 'gulp'
+var gulp = require('gulp')
 
-export default function (config) {
+module.exports = function (config) {
   return [
     function () {
-      const deps = Array.isArray(config.deps) ? deps : [config.deps]
+      var deps = Array.isArray(config.deps) ? deps : [config.deps]
       return gulp.watch(config.src, deps)
     }
   ]
 }
 ```
 
-**output**
-
-gulp-bucket automatically creates a "help" task that, for this example, would output:
-
-```
-$ gulp help
-help
----
-scripts
-scripts:vendors
-scripts:app
----
-lint
-lint:app
----
-styles
-styles:vendors
-styles:app
----
-default
----
-watch
-watch:scripts/vendors
-watch:scripts/app
-watch:styles/vendors
-watch:styles/app
----
-```
-
-Note: the default task is created by `bucket.main()` which takes an array of dependencies, flatten it and use it for the "default" task.
+Note: a default task is created by `bucket.main()` which takes an array of dependencies, flatten it and use it for the "default" task.
