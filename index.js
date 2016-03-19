@@ -22,11 +22,14 @@ function Definition (factoryName, factory) {
      * @returns {Array}
      */
     add: function add () {
-      var configs = _.toArray(arguments)
-      configs = _.flatten(configs, true)
+      var configs = _(arguments).toArray().flatten(true).value()
 
-      if (!configs.length) {
-        configs.push({})
+      if (configs.length === 0) {
+        // by adding an empty object
+        // we'll create a task that has no alias
+        // that's useful for Definition that are not
+        // really tasks creators (e.g the help task)
+        configs = [{}]
       }
 
       return _.map(configs, function (config) {
@@ -75,8 +78,8 @@ function factory (factoryName, factory) {
  * @returns {bucket}
  */
 function main () {
-  var taskList = _.toArray(arguments)
-  gulp.task('default', _.flatten(taskList, true))
+  var taskList = _(arguments).toArray().flatten(true).value()
+  gulp.task('default', taskList)
   return this
 }
 
@@ -86,12 +89,15 @@ function main () {
  * When setting options, this function returns the api
  * so you're able to chain other functions.
  *
+ * @param {Object} options
  * @returns {*}
  */
-function options () {
-  if (arguments.length) _.assign(opts, _.first(arguments))
-  else return opts
+function options (options) {
+  if (options == null) {
+    return opts
+  }
 
+  _.assign(opts, options)
   return this
 }
 
@@ -123,7 +129,11 @@ function tasks (taskName) {
  * @returns {String}
  */
 function name (definitionName, alias) {
-  return alias ? definitionName + ':' + alias : definitionName
+  if (alias) {
+    return ''.concat(definitionName, ':', alias)
+  }
+
+  return definitionName
 }
 
 module.exports = {
