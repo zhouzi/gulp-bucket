@@ -6,9 +6,17 @@
     "gulpplugin",
     "task",
     "reusable",
+    "reusability",
     "module"
   ],
   "main": "index.js",
+  "files": [
+    "help.js",
+    "index.js",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
   "scripts": {
     "lint": "standard",
     "pretest": "npm run lint",
@@ -17,9 +25,7 @@
   },
   "pre-commit": {
     "run": [
-      "lint",
-      "test",
-      "gulp"
+      "test"
     ]
   },
   "author": "Gabin Aureche <hello@gabinaureche.com> (http://gabinaureche.com/)",
