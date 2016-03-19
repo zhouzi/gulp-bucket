@@ -51,7 +51,7 @@ function Definition (factoryName, factory) {
  * every tasks created with this Definition.
  *
  * @param {String} factoryName
- * @param {Function} factory
+ * @param {Function} [factory]
  * @returns {Object} Definition
  */
 function factory (factoryName, factory) {
@@ -89,7 +89,7 @@ function main () {
  * When setting options, this function returns the api
  * so you're able to chain other functions.
  *
- * @param {Object} options
+ * @param {Object} [options]
  * @returns {*}
  */
 function options (options) {
@@ -105,7 +105,7 @@ function options (options) {
  * Returns every gulp tasks with a name that starts by taskName
  * if provided, otherwise returns all existing tasks.
  *
- * @param {String} taskName
+ * @param {String} [taskName]
  * @returns {Array}
  */
 function tasks (taskName) {
@@ -125,7 +125,7 @@ function tasks (taskName) {
  * If alias is not provided, returns the Definition name.
  *
  * @param {String} definitionName
- * @param {String} alias
+ * @param {String} [alias]
  * @returns {String}
  */
 function name (definitionName, alias) {
