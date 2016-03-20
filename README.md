@@ -164,7 +164,7 @@ module.exports = function (config, options) {
   return [
     config.lint !== false ? bucket.factory('lint', lint).add(config) : null,
     function () {
-      let stream = gulp.src(config.src)
+      var stream = gulp.src(config.src)
 
       if (options.build === true) stream = stream.pipe(uglify())
 
