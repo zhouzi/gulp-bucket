@@ -5,6 +5,7 @@ Maximize gulp tasks reusability.
 * [Installation](#installation)
 * [What problems does gulp-bucket solve?](#what-problems-does-gulp-bucket-solve)
 * [Example](#example)
+* [Change Log](#change-log)
 
 ## Installation
 
@@ -211,3 +212,9 @@ module.exports = function (config) {
 ```
 
 Note: a default task is created by `bucket.main()` which takes an array of dependencies, flatten it and use it for the "default" task.
+
+## Change Log
+
+### 1.0.0 - 2016-03-20
+
+* *First release*

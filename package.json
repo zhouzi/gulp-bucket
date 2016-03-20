@@ -1,6 +1,6 @@
 {
   "name": "gulp-bucket",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "description": "Maximize gulp tasks reusability.",
   "keywords": [
     "gulpplugin",
