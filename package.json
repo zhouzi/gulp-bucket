@@ -39,7 +39,6 @@
   },
   "homepage": "https://github.com/Zhouzi/gulp-bucket",
   "devDependencies": {
-    "assert": "*",
     "gulp": "*",
     "gulp-concat": "*",
     "gulp-uglify": "*",
