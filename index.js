@@ -14,6 +14,7 @@ var definitions = {}
  */
 function Definition (factoryName, factory) {
   var configDefaults = {}
+  var deps = []
 
   return {
     /**
@@ -58,6 +59,15 @@ function Definition (factoryName, factory) {
     defaults: function defaults (config) {
       configDefaults = config
       return this
+    },
+
+    before: function before () {
+      if (arguments.length) {
+        deps = arguments[0]
+        return this
+      }
+
+      return deps
     }
   }
 }
@@ -81,7 +91,11 @@ function factory (factoryName, factory) {
 
   if (!_.includes(taskList, factoryName)) {
     gulp.task(factoryName, function () {
-      gulp.start(tasks(factoryName + ':'))
+      var definition = definitions[factoryName]
+      var deps = definition.before()
+      var factoryTasks = tasks(factoryName + ':')
+      var tasksToRun = deps.concat(factoryTasks)
+      gulp.start(tasksToRun)
     })
   }
 

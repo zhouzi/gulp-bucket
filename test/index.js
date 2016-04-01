@@ -27,7 +27,7 @@ describe('gulp-bucket', function () {
 
   describe('has a factory function that', function () {
     it('should return a definition', function () {
-      assert.deepEqual(_.keys(bucket.factory('foo', _.noop)), ['add', 'defaults'])
+      assert.deepEqual(_.keys(bucket.factory('foo', _.noop)), ['add', 'defaults', 'before'])
     })
 
     it('should create a task that runs every tasks created from a given factory', function () {
@@ -39,6 +39,8 @@ describe('gulp-bucket', function () {
 
       gulp.tasks.foo.fn()
       assert.deepEqual(gulp.start.getCall(0).args, [['foo:bar', 'foo:quz']])
+
+      gulp.start.restore()
     })
 
     describe('has a add function that', function () {
@@ -104,6 +106,32 @@ describe('gulp-bucket', function () {
 
         assert.equal(factory.callCount, 1)
         assert.deepEqual(factory.lastCall.args, [{ input: 'src/bar', output: 'dist/bar' }, {}])
+      })
+    })
+
+    describe('has a before function that', function () {
+      it('should add tasks to run before the default factory\'s tasks', function () {
+        sinon.spy(gulp, 'start')
+
+        bucket
+          .factory('bar', _.noop)
+          .before(['foo', 'quz'])
+          .add({ alias: 'baz' })
+
+        gulp.tasks.bar.fn()
+
+        assert.equal(gulp.start.callCount, 1)
+        assert.deepEqual(gulp.start.lastCall.args, [['foo', 'quz', 'bar:baz']])
+
+        gulp.start.restore()
+      })
+
+      it('should also work as a getter', function () {
+        bucket
+          .factory('bar', _.noop)
+          .before(['foo', 'quz'])
+
+        assert.deepEqual(bucket.factory('bar').before(), ['foo', 'quz'])
       })
     })
   })
