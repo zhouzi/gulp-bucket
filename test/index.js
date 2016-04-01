@@ -27,7 +27,7 @@ describe('gulp-bucket', function () {
 
   describe('has a factory function that', function () {
     it('should return a definition', function () {
-      assert.deepEqual(_.keys(bucket.factory('foo', _.noop)), ['add'])
+      assert.deepEqual(_.keys(bucket.factory('foo', _.noop)), ['add', 'defaults'])
     })
 
     it('should create a task that runs every tasks created from a given factory', function () {
@@ -78,6 +78,32 @@ describe('gulp-bucket', function () {
 
         assert.deepEqual(bucket.factory('bar', bar).add({ alias: 'quz' }), ['bar:quz'])
         assert.deepEqual(gulp.tasks['bar:quz'].deps, ['foo:quz'])
+      })
+    })
+
+    describe('has a defaults function that', function () {
+      var factory
+
+      beforeEach(function () {
+        factory = sinon.stub()
+
+        bucket
+          .factory('bar', factory)
+          .defaults({ output: 'dist/bar' })
+      })
+
+      it('should set the default config', function () {
+        bucket.factory('bar').add({})
+
+        assert.equal(factory.callCount, 1)
+        assert.deepEqual(factory.lastCall.args, [{ output: 'dist/bar' }, {}])
+      })
+
+      it('should merge the defaults with the provided config', function () {
+        bucket.factory('bar').add({ input: 'src/bar' })
+
+        assert.equal(factory.callCount, 1)
+        assert.deepEqual(factory.lastCall.args, [{ input: 'src/bar', output: 'dist/bar' }, {}])
       })
     })
   })

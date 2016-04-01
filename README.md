@@ -215,6 +215,10 @@ Note: a default task is created by `bucket.main()` which takes an array of depen
 
 ## Change Log
 
+### 1.1.0 - Unreleased
+
+* [x] Add `defaults` to define a config's defaults for a factory.
+
 ### 1.0.0 - 2016-03-20
 
 * *First release*

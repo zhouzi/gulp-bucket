@@ -10,9 +10,11 @@ var definitions = {}
  *
  * @param {String} factoryName
  * @param {Function} factory
- * @returns {{add: add}}
+ * @returns {{add: add, defaults: defaults}}
  */
 function Definition (factoryName, factory) {
+  var configDefaults = {}
+
   return {
     /**
      * Calls the factory for each arguments and returns
@@ -32,14 +34,30 @@ function Definition (factoryName, factory) {
         configs = [{}]
       }
 
-      return _.map(configs, function (config) {
-        var taskName = name(factoryName, config.alias)
-        var deps = _(factory(config, options())).flatten(true).filter(_.identity).value()
-        var fn = _.isFunction(_.last(deps)) ? deps.pop() : _.noop
+      return _(configs)
+        .map(function (config) {
+          return _.assign({}, configDefaults, config)
+        })
+        .map(function (config) {
+          var taskName = name(factoryName, config.alias)
+          var deps = _(factory(config, options())).flatten(true).filter(_.identity).value()
+          var fn = _.isFunction(_.last(deps)) ? deps.pop() : _.noop
 
-        gulp.task(taskName, deps, fn)
-        return taskName
-      })
+          gulp.task(taskName, deps, fn)
+          return taskName
+        })
+        .run()
+    },
+
+    /**
+     * Sets the factory's default config.
+     *
+     * @param {Object} config
+     * @returns {{add: add, defaults: defaults}}
+     */
+    defaults: function defaults (config) {
+      configDefaults = config
+      return this
     }
   }
 }
