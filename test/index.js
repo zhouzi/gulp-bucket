@@ -40,45 +40,45 @@ describe('gulp-bucket', function () {
       gulp.tasks.foo.fn()
       assert.deepEqual(gulp.start.getCall(0).args, [['foo:bar', 'foo:quz']])
     })
-  })
 
-  describe('has a add function that', function () {
-    it('should return the names of the created tasks', function () {
-      assert.deepEqual(bucket.factory('foo', function () {}).add({ alias: 'bar' }), ['foo:bar'])
-    })
+    describe('has a add function that', function () {
+      it('should return the names of the created tasks', function () {
+        assert.deepEqual(bucket.factory('foo', function () {}).add({ alias: 'bar' }), ['foo:bar'])
+      })
 
-    it('should call a factory for each config of configs', function () {
-      var spy = sinon.spy()
+      it('should call a factory for each config of configs', function () {
+        var spy = sinon.spy()
 
-      bucket
-        .factory('foo', spy)
-        .add({ alias: 'bar' }, { alias: 'quz' }, [{ alias: 'foo' }])
+        bucket
+          .factory('foo', spy)
+          .add({ alias: 'bar' }, { alias: 'quz' }, [{ alias: 'foo' }])
 
-      assert.equal(spy.called, true)
-    })
+        assert.equal(spy.called, true)
+      })
 
-    it('should create a task and filter out falsy dependencies', function () {
-      bucket
-        .factory('foo', function () { return [null, '', false, 'quz:baz', 0] })
-        .add({ alias: 'bar' })
+      it('should create a task and filter out falsy dependencies', function () {
+        bucket
+          .factory('foo', function () { return [null, '', false, 'quz:baz', 0] })
+          .add({ alias: 'bar' })
 
-      assert.deepEqual(gulp.tasks['foo:bar'].deps, ['quz:baz'])
-    })
+        assert.deepEqual(gulp.tasks['foo:bar'].deps, ['quz:baz'])
+      })
 
-    it('should overwrite the main task if alias is missing', function () {
-      bucket.factory('foo', function () { return ['bar:foo'] })
-      assert.deepEqual(gulp.tasks.foo.deps, [])
+      it('should overwrite the main task if alias is missing', function () {
+        bucket.factory('foo', function () { return ['bar:foo'] })
+        assert.deepEqual(gulp.tasks.foo.deps, [])
 
-      bucket.factory('foo').add()
-      assert(gulp.tasks.foo.deps, ['bar:foo'])
-    })
+        bucket.factory('foo').add()
+        assert(gulp.tasks.foo.deps, ['bar:foo'])
+      })
 
-    it('should return created tasks but not their dependencies', function () {
-      var foo = function () { return [_.noop] }
-      var bar = function (c) { return [bucket.factory('foo', foo).add(c), _.noop] }
+      it('should return created tasks but not their dependencies', function () {
+        var foo = function () { return [_.noop] }
+        var bar = function (c) { return [bucket.factory('foo', foo).add(c), _.noop] }
 
-      assert.deepEqual(bucket.factory('bar', bar).add({ alias: 'quz' }), ['bar:quz'])
-      assert.deepEqual(gulp.tasks['bar:quz'].deps, ['foo:quz'])
+        assert.deepEqual(bucket.factory('bar', bar).add({ alias: 'quz' }), ['bar:quz'])
+        assert.deepEqual(gulp.tasks['bar:quz'].deps, ['foo:quz'])
+      })
     })
   })
 
