@@ -61,6 +61,11 @@ function Definition (factoryName, factory) {
       return this
     },
 
+    /**
+     * Getter/setter that add tasks to run before any factory's task.
+     *
+     * @returns {*}
+     */
     before: function before () {
       if (arguments.length) {
         deps = arguments[0]
