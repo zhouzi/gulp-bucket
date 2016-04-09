@@ -35,7 +35,7 @@ function Definition (factoryName, factory) {
         configs = [{}]
       }
 
-      return _(configs)
+      var addedTasks = _(configs)
         .map(function (config) {
           return _.assign({}, configDefaults, config)
         })
@@ -48,6 +48,13 @@ function Definition (factoryName, factory) {
           return taskName
         })
         .run()
+
+      if (gulp.tasks[factoryName] == null || gulp.tasks[factoryName].$root) {
+        gulp.task(factoryName, deps.concat(tasks(factoryName + ':')))
+        gulp.tasks[factoryName].$root = true
+      }
+
+      return addedTasks
     },
 
     /**
@@ -90,18 +97,6 @@ function Definition (factoryName, factory) {
 function factory (factoryName, factory) {
   if (_.isFunction(factory)) {
     definitions[factoryName] = Definition(factoryName, factory)
-  }
-
-  var taskList = tasks()
-
-  if (!_.includes(taskList, factoryName)) {
-    gulp.task(factoryName, function () {
-      var definition = definitions[factoryName]
-      var deps = definition.before()
-      var factoryTasks = tasks(factoryName + ':')
-      var tasksToRun = deps.concat(factoryTasks)
-      gulp.start(tasksToRun)
-    })
   }
 
   return definitions[factoryName]

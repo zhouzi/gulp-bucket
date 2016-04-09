@@ -37,8 +37,7 @@ describe('gulp-bucket', function () {
         .factory('foo', function () {})
         .add({ alias: 'bar' }, { alias: 'quz' })
 
-      gulp.tasks.foo.fn()
-      assert.deepEqual(gulp.start.getCall(0).args, [['foo:bar', 'foo:quz']])
+      assert.deepEqual(gulp.tasks.foo.deps, ['foo:bar', 'foo:quz'])
 
       gulp.start.restore()
     })
@@ -67,11 +66,18 @@ describe('gulp-bucket', function () {
       })
 
       it('should overwrite the main task if alias is missing', function () {
-        bucket.factory('foo', function () { return ['bar:foo'] })
-        assert.deepEqual(gulp.tasks.foo.deps, [])
+        function task () {}
 
-        bucket.factory('foo').add()
-        assert(gulp.tasks.foo.deps, ['bar:foo'])
+        function factory () {
+          return ['bar:foo', task]
+        }
+
+        bucket
+          .factory('foo', factory)
+          .add()
+
+        assert.deepEqual(gulp.tasks.foo.deps, ['bar:foo'])
+        assert.equal(gulp.tasks.foo.fn, task)
       })
 
       it('should return created tasks but not their dependencies', function () {
@@ -118,10 +124,7 @@ describe('gulp-bucket', function () {
           .before(['foo', 'quz'])
           .add({ alias: 'baz' })
 
-        gulp.tasks.bar.fn()
-
-        assert.equal(gulp.start.callCount, 1)
-        assert.deepEqual(gulp.start.lastCall.args, [['foo', 'quz', 'bar:baz']])
+        assert.deepEqual(gulp.tasks.bar.deps, ['foo', 'quz', 'bar:baz'])
 
         gulp.start.restore()
       })
@@ -168,7 +171,7 @@ describe('gulp-bucket', function () {
 
     it('should return all the tasks', function () {
       bucket.factory('foo').add({ alias: 'bar' }, { alias: 'quz' })
-      assert.deepEqual(bucket.tasks(), ['foo', 'foo:bar', 'foo:quz'])
+      assert.deepEqual(bucket.tasks(), ['foo:bar', 'foo:quz', 'foo'])
     })
 
     it('should return all the tasks prefixed by name', function () {
