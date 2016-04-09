@@ -219,6 +219,7 @@ Note: a default task is created by `bucket.main()` which takes an array of depen
 
 * [x] Add `before` to run tasks before a factory's main task.
 * [x] Add `defaults` to define a config's defaults for a factory.
+* [x] Fix the factory's root task to properly notify its end.
 
 ### 1.0.0 - 2016-03-20
 
