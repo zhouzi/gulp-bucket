@@ -54,7 +54,7 @@ function Definition (factoryName, factory) {
      * Sets the factory's default config.
      *
      * @param {Object} config
-     * @returns {{add: add, defaults: defaults}}
+     * @returns {{add: add, defaults: defaults, before: before}}
      */
     defaults: function defaults (config) {
       configDefaults = config
