@@ -1,4 +1,4 @@
-/* global describe, beforeEach, it */
+/* global describe, before, beforeEach, it */
 
 var _ = require('lodash')
 var assert = require('assert')
@@ -14,15 +14,20 @@ var gulp = {
 
     this.tasks[name] = { deps, fn }
   },
-  start () {}
+  start: function () {}
 }
 
 var proxyquire = require('proxyquire')
 var bucket = proxyquire('../index', { gulp: gulp })
 
 describe('gulp-bucket', function () {
+  before(function () {
+    sinon.spy(gulp, 'start')
+  })
+
   beforeEach(function () {
     gulp.tasks = {}
+    gulp.start.reset()
   })
 
   describe('has a factory function that', function () {
@@ -31,15 +36,11 @@ describe('gulp-bucket', function () {
     })
 
     it('should create a task that runs every tasks created from a given factory', function () {
-      sinon.spy(gulp, 'start')
-
       bucket
         .factory('foo', function () {})
         .add({ alias: 'bar' }, { alias: 'quz' })
 
       assert.deepEqual(gulp.tasks.foo.deps, ['foo:bar', 'foo:quz'])
-
-      gulp.start.restore()
     })
 
     describe('has a add function that', function () {
@@ -48,13 +49,13 @@ describe('gulp-bucket', function () {
       })
 
       it('should call a factory for each config of configs', function () {
-        var spy = sinon.spy()
+        var spy = sinon.stub()
 
         bucket
           .factory('foo', spy)
           .add({ alias: 'bar' }, { alias: 'quz' }, [{ alias: 'foo' }])
 
-        assert.equal(spy.called, true)
+        assert.equal(spy.callCount, 3)
       })
 
       it('should create a task and filter out falsy dependencies', function () {
@@ -117,16 +118,12 @@ describe('gulp-bucket', function () {
 
     describe('has a before function that', function () {
       it('should add tasks to run before the default factory\'s tasks', function () {
-        sinon.spy(gulp, 'start')
-
         bucket
           .factory('bar', _.noop)
           .before(['foo', 'quz'])
           .add({ alias: 'baz' })
 
         assert.deepEqual(gulp.tasks.bar.deps, ['foo', 'quz', 'bar:baz'])
-
-        gulp.start.restore()
       })
 
       it('should also work as a getter', function () {
@@ -141,7 +138,7 @@ describe('gulp-bucket', function () {
 
   describe('has a main function that', function () {
     it('should return the api', function () {
-      assert.deepEqual(bucket.main(), bucket)
+      assert.equal(bucket.main(), bucket)
     })
 
     it('should create a default task from an array of task names', function () {
@@ -156,7 +153,7 @@ describe('gulp-bucket', function () {
     })
 
     it('should merge the options and return the api', function () {
-      assert.deepEqual(bucket.options({ foo: 'bar' }), bucket)
+      assert.equal(bucket.options({ foo: 'bar' }), bucket)
       assert.deepEqual(bucket.options(), { foo: 'bar' })
 
       bucket.options({ zup: 'zip' })
