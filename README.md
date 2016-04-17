@@ -5,6 +5,7 @@ Maximize gulp tasks reusability.
 * [Installation](#installation)
 * [What problems does gulp-bucket solve?](#what-problems-does-gulp-bucket-solve)
 * [Example](#example)
+* [Documentation](#documentation)
 * [Change Log](#change-log)
 
 ## Installation
@@ -212,6 +213,102 @@ module.exports = function (config) {
 ```
 
 Note: a default task is created by `bucket.main()` which takes an array of dependencies, flatten it and use it for the "default" task.
+
+## Documentation
+
+### factory(name, [factory])
+
+Getter/setter that whether registers a factory that can be used to create tasks or return the existing one if factory is omitted.
+
+1. **name** {String}: the name to be used as a prefix for the tasks created by this factory.
+2. **factory** {Function}: a function to call every time a task gets added.
+
+Return a registered [factory](#factory-api).
+
+### main(...tasksNames)
+
+Creates a default task that runs the provided tasks.
+Note: flatten the array of task names so `['scripts', ['styles', 'styles:website']]` is perfectly valid.
+
+1. **taskNames** {Array}: an array of tasks names.
+
+Return the api.
+
+### options([opts])
+
+Getter/setter that whether merge opts with the existing ones or return them.
+When a factory function is called it receives those options as second argument so that's usually where you'll set `build: true` for example.
+Works great with command line arguments and packages like `yargs.argv`.
+
+1. **opts** {Object}: options to add and provide to factories.
+
+Return the api or the options if opts is omitted.
+
+### tasks([taskName])
+
+Return tasks names that start with taskName.
+
+1. **taskName** {String}: the prefix to look for.
+
+```javascript
+// tasks: ['help', 'scripts', 'scripts:website', 'scripts:webapp']
+bucket.tasks(); // ['help', 'scripts', 'scripts:website', 'scripts:webapp']
+bucket.tasks('scripts'); // ['scripts', 'scripts:website', 'scripts:webapp']
+bucket.tasks('scripts:'); // ['scripts:website', 'scripts:webapp']
+```
+
+Return an array of tasks that start with taskName or the full list if not provided.
+
+### name(factoryName, [alias])
+
+Return the name of a task according to its factoryName and alias.
+
+1. **factoryName** {String}: the factory's name.
+2. **alias** {String}: the task's alias.
+
+```javascript
+bucket.name('scripts') // 'scripts'
+bucket.name('scripts', 'website') // 'scripts:website'
+```
+
+Return a task's name.
+
+### Factory API
+
+#### add(...configs)
+
+Call factory for each config, which results in creating a task.
+Note: there's only one required property to the config object: `config.alias` which is used to alias the task.
+If not provided, it'll overwrite the default task.
+
+Also note that, unless it gets overwritten, a root task is created that runs every tasks under its name.
+
+1. **configs** {Array}: a list of configs that gets passed to the factory.
+
+Return the list of tasks that got added/created.
+
+#### defaults(config)
+
+Sets the default config for the factory.
+
+1. **config** {Object}: an object that'll get merged with the provided configs.
+
+```javascript
+bucket
+  .factory('scripts', scripts)
+  .defaults({ dest: 'build' })
+  .add({ src: 'src/index.js' }); // the config object will end up being { dest: 'build', src: 'src/index.js' }
+```
+
+Return the factory api.
+
+#### before([...tasksNames])
+
+The root task will now run the provided list of tasks before its children.
+
+1. **tasksNames** {Array}: a list of tasks names.
+
+Return the factory api.
 
 ## Change Log
 
