@@ -1,3 +1,5 @@
+⚠️ gulp-bucket is not maintained anymore and is very much out of date, both in terms of approach and code. ⚠️
+
 # gulp-bucket
 
 Maximize gulp tasks reusability.
